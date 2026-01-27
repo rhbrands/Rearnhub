@@ -15,7 +15,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, updateDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
@@ -40,22 +40,21 @@ document.getElementById("registerBtn").addEventListener("click", async () => {
     const uid = userCredential.user.uid;
     const userDocRef = doc(db, "users", uid);
 
-    // Create the user document
+    // Create user document
     await setDoc(userDocRef, {
       points: 0,
       completedTasks: [],
       referralCount: 0
     });
 
-    // Handle referral safely
+    // Handle referral safely using atomic increment
     const urlParams = new URLSearchParams(window.location.search);
     const refId = urlParams.get('ref');
     if(refId && refId !== uid) {
       const refDocRef = doc(db, "users", refId);
       const refSnap = await getDoc(refDocRef);
       if(refSnap.exists()) {
-        // Increment referralCount by +1 using Firestore rules safely
-        await updateDoc(refDocRef, { referralCount: refSnap.data().referralCount + 1 });
+        await updateDoc(refDocRef, { referralCount: increment(1) });
       }
     }
 
