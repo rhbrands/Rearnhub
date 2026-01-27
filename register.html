@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register - RearnHub</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
 <h1>Register</h1>
@@ -52,7 +52,8 @@ document.getElementById("registerBtn").addEventListener("click", () => {
         await updateDoc(refDocRef, { referralCount: currentCount + 1 });
       }
 
-      window.location.href = "dashboard.html";
+      // Redirect to dashboard inside Rearnhub folder
+      window.location.href = "/Rearnhub/dashboard.html";
     })
     .catch(err => alert(err.message));
 });
