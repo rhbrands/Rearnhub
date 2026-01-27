@@ -67,10 +67,10 @@ let userId = null;
 
 // ===== Task List =====
 const tasksList = [
-  { id: "task1", title: "Join RearnHub Telegram", type: "link", points: 10, link: "https://t.me/YourTelegramChannel", icon: "telegram-icon.png" },
-  { id: "task2", title: "Follow RearnHub on Twitter", type: "link", points: 15, link: "https://twitter.com/RearnHub", icon: "twitter-icon.png" },
-  { id: "task3", title: "Join Discord Server", type: "link", points: 20, link: "https://discord.gg/YourDiscord", icon: "discord-icon.png" },
-  { id: "task4", title: "Follow Instagram", type: "link", points: 12, link: "https://instagram.com/RearnHub", icon: "instagram-icon.png" },
+  { id: "task1", title: "Join RearnHub Telegram", type: "link", points: 10, link: "https://t.me/YourTelegramChannel", icon: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
+  { id: "task2", title: "Follow RearnHub on Twitter", type: "link", points: 15, link: "https://twitter.com/RearnHub", icon: "https://upload.wikimedia.org/wikipedia/en/6/60/Twitter_Logo_as_of_2021.svg" },
+  { id: "task3", title: "Join Discord Server", type: "link", points: 20, link: "https://discord.gg/YourDiscord", icon: "https://upload.wikimedia.org/wikipedia/commons/9/98/Discord_logo.svg" },
+  { id: "task4", title: "Follow Instagram", type: "link", points: 12, link: "https://instagram.com/RearnHub", icon: "https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" },
   { id: "task5", title: "Complete Task 5", type: "normal", points: 25 }
 ];
 
@@ -175,7 +175,6 @@ onAuthStateChanged(auth, async user => {
     const docSnap = await getDoc(userDocRef);
 
     if(docSnap.exists()) {
-      // Points
       pointsSpan.textContent = docSnap.data().points;
 
       // Referral link
@@ -194,10 +193,8 @@ onAuthStateChanged(auth, async user => {
         if(taskDiv) moveToCompleted(taskDiv);
       });
 
-      // Render remaining tasks
       renderTasks(completed);
     } else {
-      // New user
       await setDoc(userDocRef, { points: 0, completedTasks: [], referralLink: `${window.location.origin}/register.html?ref=${user.uid}`, referralCount: 0 });
       pointsSpan.textContent = 0;
       referralInput.value = `${window.location.origin}/register.html?ref=${user.uid}`;
