@@ -1,130 +1,131 @@
+/* ===== GENERAL STYLES ===== */
 body {
     background: #0f0f0f;
     color: #fff;
     font-family: Arial, sans-serif;
     text-align: center;
-    padding-top: 100px;
-    margin: 0;
+    padding: 50px 20px;
 }
 
 .container {
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 auto;
-    padding: 20px;
 }
 
-a {
-    display: inline-block;
-    margin: 10px;
-    padding: 10px 20px;
-    background: #00ff9c;
-    color: #000;
-    text-decoration: none;
-    border-radius: 5px;
+h2, h3 {
+    margin-bottom: 20px;
+}
+
+/* ===== POINTS ===== */
+#points {
     font-weight: bold;
-    transition: all 0.2s;
+    color: #00ff9c;
 }
 
-a:hover {
-    background: #00cc7a;
+/* ===== TASK ITEMS ===== */
+.task-item {
+    background: #1a1a1a;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
-button {
-    display: inline-block;
-    margin: 10px;
-    padding: 10px 20px;
+/* Paragraph inside task */
+.task-item p {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* ===== NORMAL TASK BUTTON ===== */
+.task-item .task-btn {
+    padding: 8px 20px;
     background: #00ff9c;
     color: #000;
     border: none;
     border-radius: 5px;
-    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.task-item .task-btn:disabled {
+    background: #555;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.task-item .task-btn:hover:not(:disabled) {
+    background: #00cc7a;
+}
+
+/* ===== LINK TASKS (Telegram, Twitter, Discord, etc.) ===== */
+.link-task {
+    border: 2px solid #333;
+}
+
+.link-task .task-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #0088cc;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.link-task .task-link:hover {
+    background: #00aaff;
+}
+
+/* Icon inside link button */
+.link-task .icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Special colors for different link types */
+.link-task[data-taskid="task1"] .task-link { background: #0088cc; } /* Telegram */
+.link-task[data-taskid="task2"] .task-link { background: #1DA1F2; } /* Twitter */
+.link-task[data-taskid="task3"] .task-link { background: #7289DA; } /* Discord */
+.link-task[data-taskid="task4"] .task-link { background: #C13584; } /* Instagram */
+
+/* ===== TASK BUTTON NEXT TO LINK TASK ===== */
+.link-task .task-btn {
+    margin-top: 8px;
+    background: #00ff9c;
+}
+
+.link-task .task-btn:disabled {
+    background: #555;
+    color: #aaa;
+}
+
+/* ===== COMPLETED TASKS SECTION ===== */
+#completed-tasks .task-item {
+    background: #333;
+    opacity: 0.8;
+}
+
+/* ===== LOGOUT BUTTON ===== */
+#logoutBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #ff4d4d;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
 }
 
-button:hover {
-    background: #00cc7a;
-}
-
-input {
-    padding: 10px;
-    margin: 5px 0;
-    width: 250px;
-    border-radius: 5px;
-    border: 1px solid #00ff9c;
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 16px;
-}
-
-input::placeholder {
-    color: #888;
-}
-
-h1, h2 {
-    margin-bottom: 20px;
-}
-
-p {
-    margin-bottom: 20px;
-    font-size: 18px;
-}
-
-.message {
-    margin-bottom: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    display: none;
-    font-weight: bold;
-}
-
-.message.success {
-    background-color: #00ff9c;
-    color: #000;
-}
-
-.message.error {
-    background-color: #ff4c4c;
-    color: #fff;
-}
-
-/* Task Styling */
-.task-item {
-    border: 1px solid #00ff9c;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    text-align: left;
-}
-
-.task-link {
-    display: inline-block;
-    margin-right: 10px;
-    padding: 6px 12px;
-    background: #00cc7a;
-    color: #000;
-    text-decoration: none;
-    border-radius: 5px;
-}
-
-.task-link:hover {
-    background: #00ff9c;
-}
-
-#completed-tasks .task-item {
-    background: #222;
-    border-color: #555;
-    color: #aaa;
-}
-
-@media screen and (max-width: 500px) {
-    input {
-        width: 80%;
-    }
-
-    a, button {
-        width: 80%;
-        padding: 12px;
-    }
+#logoutBtn:hover {
+    background: #e60000;
 }
