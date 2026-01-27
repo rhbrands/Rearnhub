@@ -16,26 +16,7 @@
   <!-- Available Tasks Section -->
   <div id="tasks-section">
     <h3>Available Tasks</h3>
-    <div id="tasks">
-      <!-- Task 1 -->
-      <div class="task-item" data-taskid="task1">
-        <p>Task 1: Join RearnHub Telegram</p>
-        <a href="https://t.me/YourTelegramChannel" target="_blank" class="task-link">Go to Telegram</a>
-        <button class="task-btn" data-points="10" disabled>Mark as Complete</button>
-      </div>
-
-      <!-- Task 2 -->
-      <div class="task-item" data-taskid="task2">
-        <p>Task 2: Complete Task 2</p>
-        <button class="task-btn" data-points="20">Mark as Complete</button>
-      </div>
-
-      <!-- Task 3 -->
-      <div class="task-item" data-taskid="task3">
-        <p>Task 3: Complete Task 3</p>
-        <button class="task-btn" data-points="30">Mark as Complete</button>
-      </div>
-    </div>
+    <div id="tasks"></div>
   </div>
 
   <!-- Completed Tasks Section -->
@@ -49,11 +30,10 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, signOut, onAuthStateChanged } 
-  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } 
-  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
   authDomain: "rearnhub.firebaseapp.com",
@@ -70,77 +50,73 @@ const db = getFirestore(app);
 const pointsSpan = document.getElementById("points");
 const tasksDiv = document.getElementById("tasks");
 const logoutBtn = document.getElementById("logoutBtn");
+const completedDiv = document.getElementById("completed-tasks");
 
 let userId = null;
 
-// Check login and load points + completed tasks
-onAuthStateChanged(auth, async user => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-  userId = user.uid;
+// ===== Task List =====
+// Add new tasks here easily
+const tasksList = [
+  { id: "task1", title: "Join RearnHub Telegram", type: "link", points: 10, link: "https://t.me/YourTelegramChannel", icon: "telegram-icon.png" },
+  { id: "task2", title: "Follow RearnHub on Twitter", type: "link", points: 15, link: "https://twitter.com/RearnHub", icon: "twitter-icon.png" },
+  { id: "task3", title: "Join Discord Server", type: "link", points: 20, link: "https://discord.gg/YourDiscord", icon: "discord-icon.png" },
+  { id: "task4", title: "Complete Task 4", type: "normal", points: 25 }
+];
 
-  const userDocRef = doc(db, "users", userId);
-  const docSnap = await getDoc(userDocRef);
+// ===== Render Tasks Dynamically =====
+function renderTasks(completedTasks=[]) {
+  tasksDiv.innerHTML = "";
+  tasksList.forEach(task => {
+    if(completedTasks.includes(task.id)) return;
 
-  if (docSnap.exists()) {
-    pointsSpan.textContent = docSnap.data().points;
-    const completed = docSnap.data().completedTasks || [];
+    const taskDiv = document.createElement("div");
+    taskDiv.classList.add("task-item");
+    taskDiv.dataset.taskid = task.id;
 
-    // Move completed tasks to completed section
-    completed.forEach(taskId => {
-      const taskDiv = document.querySelector(`.task-item[data-taskid="${taskId}"]`);
-      if (taskDiv) moveToCompleted(taskDiv);
-    });
-  } else {
-    await setDoc(userDocRef, { points: 0, completedTasks: [] });
-    pointsSpan.textContent = 0;
-  }
-});
+    let html = `<p>${task.title}</p>`;
 
-// Function to move task to completed section
-function moveToCompleted(taskDiv) {
-  const completedTasksDiv = document.getElementById("completed-tasks");
-  taskDiv.querySelector(".task-btn")?.remove(); // remove button
-  completedTasksDiv.appendChild(taskDiv);
+    if(task.type === "link") {
+      taskDiv.classList.add("link-task");
+      html += `<a href="${task.link}" target="_blank" class="task-link">
+                 ${task.icon ? `<img src="${task.icon}" class="icon" alt="">` : ""} ${task.title}
+               </a>`;
+      html += `<button class="task-btn" data-points="${task.points}" disabled>Mark as Complete</button>`;
+    } else {
+      html += `<button class="task-btn" data-points="${task.points}">Mark as Complete</button>`;
+    }
+
+    taskDiv.innerHTML = html;
+    tasksDiv.appendChild(taskDiv);
+  });
 }
 
-// Enable Task 1 button only after clicking the Telegram link
-const telegramLinks = document.querySelectorAll(".task-link");
-telegramLinks.forEach(link => {
-  link.addEventListener("click", () => {
-    const taskDiv = link.closest(".task-item");
-    const button = taskDiv.querySelector(".task-btn");
-    button.disabled = false;
-  });
-});
+// ===== Move Task to Completed Section =====
+function moveToCompleted(taskDiv) {
+  taskDiv.querySelector(".task-btn")?.remove();
+  completedDiv.appendChild(taskDiv);
+}
 
-// Task completion listener
-tasksDiv.addEventListener("click", async e => {
-  if (!e.target.classList.contains("task-btn")) return;
-  const button = e.target;
+// ===== Handle Task Completion =====
+async function handleTaskCompletion(button) {
   const taskDiv = button.closest(".task-item");
   const taskId = taskDiv.dataset.taskid;
-  const pointsToAdd = parseInt(button.dataset.points);
-  if (!userId) return;
+  const task = tasksList.find(t => t.id === taskId);
+  const pointsToAdd = task.points;
+
+  if(!userId) return;
 
   const userDocRef = doc(db, "users", userId);
-  const isTelegramTask = taskDiv.querySelector(".task-link") !== null;
 
   const completeTask = async () => {
-    // Update points and completed tasks array
     await updateDoc(userDocRef, {
       points: (parseInt(pointsSpan.textContent) || 0) + pointsToAdd,
       completedTasks: arrayUnion(taskId)
     });
-
     pointsSpan.textContent = parseInt(pointsSpan.textContent) + pointsToAdd;
     moveToCompleted(taskDiv);
   };
 
-  if (isTelegramTask) {
-    // Telegram task 5-second delay
+  if(task.type === "link") {
     button.disabled = true;
     let countdown = 5;
     const originalText = button.textContent;
@@ -148,9 +124,8 @@ tasksDiv.addEventListener("click", async e => {
 
     const interval = setInterval(() => {
       countdown--;
-      if (countdown > 0) {
-        button.textContent = `Completing... ${countdown}s`;
-      } else {
+      if(countdown > 0) button.textContent = `Completing... ${countdown}s`;
+      else {
         clearInterval(interval);
         completeTask().catch(err => {
           button.textContent = originalText;
@@ -160,16 +135,52 @@ tasksDiv.addEventListener("click", async e => {
       }
     }, 1000);
   } else {
-    // Other tasks: instant
     completeTask().catch(err => alert("Error updating points: " + err.message));
   }
+}
+
+// ===== Event Listeners =====
+tasksDiv.addEventListener("click", e => {
+  if(e.target.classList.contains("task-link")) {
+    const taskDiv = e.target.closest(".task-item");
+    const button = taskDiv.querySelector(".task-btn");
+    if(button) button.disabled = false;
+  }
+
+  if(e.target.classList.contains("task-btn")) handleTaskCompletion(e.target);
 });
 
-// Logout
+// ===== Logout =====
 logoutBtn.addEventListener("click", () => {
   signOut(auth).then(() => window.location.href = "login.html");
 });
-</script>
 
+// ===== Load User Data =====
+onAuthStateChanged(auth, async user => {
+  if(!user) window.location.href = "login.html";
+  else {
+    userId = user.uid;
+    const userDocRef = doc(db, "users", userId);
+    const docSnap = await getDoc(userDocRef);
+
+    if(docSnap.exists()) {
+      pointsSpan.textContent = docSnap.data().points;
+      const completed = docSnap.data().completedTasks || [];
+
+      // Move completed tasks
+      completed.forEach(taskId => {
+        const taskDiv = document.querySelector(`.task-item[data-taskid="${taskId}"]`);
+        if(taskDiv) moveToCompleted(taskDiv);
+      });
+
+      renderTasks(completed);
+    } else {
+      await setDoc(userDocRef, { points: 0, completedTasks: [] });
+      pointsSpan.textContent = 0;
+      renderTasks();
+    }
+  }
+});
+</script>
 </body>
 </html>
