@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Dashboard - RearnHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -19,13 +20,13 @@
     <p>Referral Count: <span id="referralCount">0</span></p>
   </div>
 
-  <!-- Tasks -->
+  <!-- Tasks Section -->
   <div id="tasks-section">
     <h3>Available Tasks</h3>
     <div id="tasks"></div>
   </div>
 
-  <!-- Completed Tasks -->
+  <!-- Completed Tasks Section -->
   <div id="completed-section">
     <h3>Completed Tasks</h3>
     <div id="completed-tasks"></div>
@@ -61,6 +62,7 @@ const referralCountSpan = document.getElementById("referralCount");
 
 let userId = null;
 
+// List of tasks (easy to add more later)
 const tasksList = [
   { id: "task1", title: "Join RearnHub Telegram", type: "link", points: 10, link: "https://t.me/YourTelegramChannel", icon: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
   { id: "task2", title: "Follow RearnHub on Twitter", type: "link", points: 15, link: "https://twitter.com/RearnHub", icon: "https://upload.wikimedia.org/wikipedia/en/6/60/Twitter_Logo_as_of_2021.svg" },
@@ -69,6 +71,7 @@ const tasksList = [
   { id: "task5", title: "Complete Task 5", type: "normal", points: 25 }
 ];
 
+// Render tasks that are not yet completed
 function renderTasks(completedTasks=[]) {
   tasksDiv.innerHTML = "";
   tasksList.forEach(task => {
@@ -92,11 +95,13 @@ function renderTasks(completedTasks=[]) {
   });
 }
 
+// Move completed task to completed section
 function moveToCompleted(taskDiv) {
   taskDiv.querySelector(".task-btn")?.remove();
   completedDiv.appendChild(taskDiv);
 }
 
+// Handle task completion
 async function handleTaskCompletion(button) {
   const taskDiv = button.closest(".task-item");
   const taskId = taskDiv.dataset.taskid;
@@ -136,6 +141,7 @@ async function handleTaskCompletion(button) {
   }
 }
 
+// Enable mark as complete on link click
 tasksDiv.addEventListener("click", e => {
   if(e.target.classList.contains("task-link")) {
     const taskDiv = e.target.closest(".task-item");
@@ -145,10 +151,12 @@ tasksDiv.addEventListener("click", e => {
   if(e.target.classList.contains("task-btn")) handleTaskCompletion(e.target);
 });
 
+// Logout button
 logoutBtn.addEventListener("click", () => {
   signOut(auth).then(() => window.location.href = "/Rearnhub/login.html");
 });
 
+// Firebase auth listener
 onAuthStateChanged(auth, async user => {
   if(!user) window.location.href = "/Rearnhub/login.html";
   else {
@@ -158,6 +166,8 @@ onAuthStateChanged(auth, async user => {
 
     if(docSnap.exists()) {
       pointsSpan.textContent = docSnap.data().points;
+
+      // Generate referral link correctly with /Rearnhub/
       let referralLink = docSnap.data()?.referralLink;
       if(!referralLink) {
         referralLink = `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`;
