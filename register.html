@@ -1,81 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Register - RearnHub</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+// After successful registration
+createUserWithEmailAndPassword(auth, email, password)
+.then(async (userCredential) => {
+  const uid = userCredential.user.uid;
+  const userDocRef = doc(db, "users", uid);
 
-<div class="container">
-  <h2>Create Account</h2>
+  await setDoc(userDocRef, { points: 0, completedTasks: [], referralCount: 0 });
 
-  <!-- Inline message container -->
-  <div id="message" class="message"></div>
+  // Check for referral
+  const urlParams = new URLSearchParams(window.location.search);
+  const refId = urlParams.get('ref');
+  if(refId) {
+    const refDocRef = doc(db, "users", refId);
+    // Increment referralCount
+    await updateDoc(refDocRef, { referralCount: (await getDoc(refDocRef)).data().referralCount + 1 });
+  }
 
-  <input type="email" id="email" placeholder="Email"><br><br>
-  <input type="password" id="password" placeholder="Password"><br><br>
-
-  <button id="registerBtn">Register</button>
-
-  <p>Already have an account? <a href="login.html">Login</a></p>
-</div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword } 
-    from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc } 
-    from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
-    authDomain: "rearnhub.firebaseapp.com",
-    projectId: "rearnhub",
-    storageBucket: "rearnhub.firebasestorage.app",
-    messagingSenderId: "461077159495",
-    appId: "1:461077159495:web:595412074b4c28de17db62"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  const registerBtn = document.getElementById("registerBtn");
-  const messageDiv = document.getElementById("message");
-
-  registerBtn.addEventListener("click", async () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) {
-      messageDiv.textContent = "Enter email and password";
-      messageDiv.className = "message error";
-      messageDiv.style.display = "block";
-      return;
-    }
-
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const userId = userCredential.user.uid;
-
-      // Initialize user points and completed tasks in Firestore
-      await setDoc(doc(db, "users", userId), { points: 0, completedTasks: [] });
-
-      messageDiv.textContent = "Registration successful!";
-      messageDiv.className = "message success";
-      messageDiv.style.display = "block";
-
-      setTimeout(() => {
-        window.location.href = "dashboard.html";
-      }, 1500);
-    } catch (error) {
-      messageDiv.textContent = error.message;
-      messageDiv.className = "message error";
-      messageDiv.style.display = "block";
-    }
-  });
-</script>
-
-</body>
-</html>
+  window.location.href = "dashboard.html";
+})
