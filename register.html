@@ -1,19 +1,61 @@
-// After successful registration
-createUserWithEmailAndPassword(auth, email, password)
-.then(async (userCredential) => {
-  const uid = userCredential.user.uid;
-  const userDocRef = doc(db, "users", uid);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - RearnHub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Register</h1>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button id="registerBtn">Register</button>
 
-  await setDoc(userDocRef, { points: 0, completedTasks: [], referralCount: 0 });
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-  // Check for referral
-  const urlParams = new URLSearchParams(window.location.search);
-  const refId = urlParams.get('ref');
-  if(refId) {
-    const refDocRef = doc(db, "users", refId);
-    // Increment referralCount
-    await updateDoc(refDocRef, { referralCount: (await getDoc(refDocRef)).data().referralCount + 1 });
-  }
+const firebaseConfig = {
+  apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
+  authDomain: "rearnhub.firebaseapp.com",
+  projectId: "rearnhub",
+  storageBucket: "rearnhub.firebasestorage.app",
+  messagingSenderId: "461077159495",
+  appId: "1:461077159495:web:595412074b4c28de17db62"
+};
 
-  window.location.href = "dashboard.html";
-})
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+document.getElementById("registerBtn").addEventListener("click", () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if(!email || !password) { alert("Enter email and password"); return; }
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(async userCredential => {
+      const uid = userCredential.user.uid;
+      const userDocRef = doc(db, "users", uid);
+      await setDoc(userDocRef, { points: 0, completedTasks: [], referralCount: 0 });
+
+      // Referral tracking
+      const urlParams = new URLSearchParams(window.location.search);
+      const refId = urlParams.get('ref');
+      if(refId) {
+        const refDocRef = doc(db, "users", refId);
+        const refSnap = await getDoc(refDocRef);
+        const currentCount = refSnap.exists() ? refSnap.data().referralCount || 0 : 0;
+        await updateDoc(refDocRef, { referralCount: currentCount + 1 });
+      }
+
+      window.location.href = "dashboard.html";
+    })
+    .catch(err => alert(err.message));
+});
+</script>
+</body>
+</html>
