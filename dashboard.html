@@ -9,36 +9,87 @@
 
 <div class="container">
   <h2>Welcome to RearnHub Dashboard</h2>
-  <p>You are now logged in.</p>
+
+  <!-- Points Display -->
+  <p>Your Points: <span id="points">0</span></p>
+
+  <!-- Tasks List -->
+  <div id="tasks">
+    <h3>Tasks</h3>
+    <button class="task-btn" data-points="10">Complete Task 1 (+10 pts)</button>
+    <button class="task-btn" data-points="20">Complete Task 2 (+20 pts)</button>
+    <button class="task-btn" data-points="30">Complete Task 3 (+30 pts)</button>
+  </div>
 
   <button id="logoutBtn">Logout</button>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAuth, signOut, onAuthStateChanged } 
-    from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, signOut, onAuthStateChanged } 
+  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } 
+  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
-    authDomain: "rearnhub.firebaseapp.com",
-    projectId: "rearnhub",
-    storageBucket: "rearnhub.firebasestorage.app",
-    messagingSenderId: "461077159495",
-    appId: "1:461077159495:web:595412074b4c28de17db62"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
+  authDomain: "rearnhub.firebaseapp.com",
+  projectId: "rearnhub",
+  storageBucket: "rearnhub.firebasestorage.app",
+  messagingSenderId: "461077159495",
+  appId: "1:461077159495:web:595412074b4c28de17db62"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  // Redirect to login if not logged in
-  onAuthStateChanged(auth, user => {
-    if (!user) window.location.href = "login.html";
+const pointsSpan = document.getElementById("points");
+const tasksDiv = document.getElementById("tasks");
+const logoutBtn = document.getElementById("logoutBtn");
+
+let userId = null;
+
+// Check login
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+  userId = user.uid;
+
+  const userDocRef = doc(db, "users", userId);
+  const docSnap = await getDoc(userDocRef);
+  if (docSnap.exists()) {
+    pointsSpan.textContent = docSnap.data().points;
+  } else {
+    await setDoc(userDocRef, { points: 0 });
+    pointsSpan.textContent = 0;
+  }
+});
+
+// Task completion
+tasksDiv.addEventListener("click", async e => {
+  if (!e.target.classList.contains("task-btn")) return;
+  const pointsToAdd = parseInt(e.target.dataset.points);
+  if (!userId) return;
+
+  const userDocRef = doc(db, "users", userId);
+
+  await updateDoc(userDocRef, {
+    points: (parseInt(pointsSpan.textContent) || 0) + pointsToAdd
   });
 
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    signOut(auth).then(() => window.location.href = "login.html");
-  });
+  pointsSpan.textContent = parseInt(pointsSpan.textContent) + pointsToAdd;
+
+  e.target.disabled = true;
+  e.target.textContent = "Completed ✓";
+});
+
+// Logout
+logoutBtn.addEventListener("click", () => {
+  signOut(auth).then(() => window.location.href = "login.html");
+});
 </script>
 
 </body>
