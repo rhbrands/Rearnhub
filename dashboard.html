@@ -21,7 +21,7 @@
       <div class="task-item" data-taskid="task1">
         <p>Task 1: Join RearnHub Telegram</p>
         <a href="https://t.me/YourTelegramChannel" target="_blank" class="task-link">Go to Telegram</a>
-        <button class="task-btn" data-points="10">Mark as Complete</button>
+        <button class="task-btn" data-points="10" disabled>Mark as Complete</button>
       </div>
 
       <!-- Task 2 -->
@@ -73,7 +73,7 @@ const logoutBtn = document.getElementById("logoutBtn");
 
 let userId = null;
 
-// Check login
+// Check login and load points + completed tasks
 onAuthStateChanged(auth, async user => {
   if (!user) {
     window.location.href = "login.html";
@@ -105,6 +105,16 @@ function moveToCompleted(taskDiv) {
   taskDiv.querySelector(".task-btn")?.remove(); // remove button
   completedTasksDiv.appendChild(taskDiv);
 }
+
+// Enable Task 1 button only after clicking the Telegram link
+const telegramLinks = document.querySelectorAll(".task-link");
+telegramLinks.forEach(link => {
+  link.addEventListener("click", () => {
+    const taskDiv = link.closest(".task-item");
+    const button = taskDiv.querySelector(".task-btn");
+    button.disabled = false;
+  });
+});
 
 // Task completion listener
 tasksDiv.addEventListener("click", async e => {
