@@ -13,6 +13,15 @@
   <!-- Points Display -->
   <p>Your Points: <span id="points">0</span></p>
 
+  <!-- Referral Section -->
+  <div id="referral-section">
+    <h3>Refer & Earn</h3>
+    <p>Earn #1000.00 for each referral!</p>
+    <p>Your Referral Link:</p>
+    <input type="text" id="referralLinkInput" readonly>
+    <p>Referral Count: <span id="referralCount">0</span></p>
+  </div>
+
   <!-- Available Tasks Section -->
   <div id="tasks-section">
     <h3>Available Tasks</h3>
@@ -51,16 +60,18 @@ const pointsSpan = document.getElementById("points");
 const tasksDiv = document.getElementById("tasks");
 const logoutBtn = document.getElementById("logoutBtn");
 const completedDiv = document.getElementById("completed-tasks");
+const referralInput = document.getElementById("referralLinkInput");
+const referralCountSpan = document.getElementById("referralCount");
 
 let userId = null;
 
 // ===== Task List =====
-// Add new tasks here easily
 const tasksList = [
   { id: "task1", title: "Join RearnHub Telegram", type: "link", points: 10, link: "https://t.me/YourTelegramChannel", icon: "telegram-icon.png" },
   { id: "task2", title: "Follow RearnHub on Twitter", type: "link", points: 15, link: "https://twitter.com/RearnHub", icon: "twitter-icon.png" },
   { id: "task3", title: "Join Discord Server", type: "link", points: 20, link: "https://discord.gg/YourDiscord", icon: "discord-icon.png" },
-  { id: "task4", title: "Complete Task 4", type: "normal", points: 25 }
+  { id: "task4", title: "Follow Instagram", type: "link", points: 12, link: "https://instagram.com/RearnHub", icon: "instagram-icon.png" },
+  { id: "task5", title: "Complete Task 5", type: "normal", points: 25 }
 ];
 
 // ===== Render Tasks Dynamically =====
@@ -155,7 +166,7 @@ logoutBtn.addEventListener("click", () => {
   signOut(auth).then(() => window.location.href = "login.html");
 });
 
-// ===== Load User Data =====
+// ===== Load User Data & Referral Info =====
 onAuthStateChanged(auth, async user => {
   if(!user) window.location.href = "login.html";
   else {
@@ -164,19 +175,33 @@ onAuthStateChanged(auth, async user => {
     const docSnap = await getDoc(userDocRef);
 
     if(docSnap.exists()) {
+      // Points
       pointsSpan.textContent = docSnap.data().points;
-      const completed = docSnap.data().completedTasks || [];
 
-      // Move completed tasks
+      // Referral link
+      let referralLink = docSnap.data()?.referralLink;
+      if(!referralLink) {
+        referralLink = `${window.location.origin}/register.html?ref=${user.uid}`;
+        await updateDoc(userDocRef, { referralLink, referralCount: 0 });
+      }
+      referralInput.value = referralLink;
+      referralCountSpan.textContent = docSnap.data()?.referralCount || 0;
+
+      // Completed tasks
+      const completed = docSnap.data().completedTasks || [];
       completed.forEach(taskId => {
         const taskDiv = document.querySelector(`.task-item[data-taskid="${taskId}"]`);
         if(taskDiv) moveToCompleted(taskDiv);
       });
 
+      // Render remaining tasks
       renderTasks(completed);
     } else {
-      await setDoc(userDocRef, { points: 0, completedTasks: [] });
+      // New user
+      await setDoc(userDocRef, { points: 0, completedTasks: [], referralLink: `${window.location.origin}/register.html?ref=${user.uid}`, referralCount: 0 });
       pointsSpan.textContent = 0;
+      referralInput.value = `${window.location.origin}/register.html?ref=${user.uid}`;
+      referralCountSpan.textContent = 0;
       renderTasks();
     }
   }
