@@ -46,7 +46,7 @@
     if (user) window.location.href = "dashboard.html";
   });
 
-  loginBtn.addEventListener("click", () => {
+  loginBtn.addEventListener("click", async () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
@@ -57,21 +57,20 @@
       return;
     }
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        messageDiv.textContent = "Login successful!";
-        messageDiv.className = "message success";
-        messageDiv.style.display = "block";
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      messageDiv.textContent = "Login successful!";
+      messageDiv.className = "message success";
+      messageDiv.style.display = "block";
 
-        setTimeout(() => {
-          window.location.href = "dashboard.html";
-        }, 1000);
-      })
-      .catch(error => {
-        messageDiv.textContent = error.message;
-        messageDiv.className = "message error";
-        messageDiv.style.display = "block";
-      });
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1000);
+    } catch (error) {
+      messageDiv.textContent = error.message;
+      messageDiv.className = "message error";
+      messageDiv.style.display = "block";
+    }
   });
 </script>
 
