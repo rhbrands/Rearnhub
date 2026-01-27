@@ -1,3 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - RearnHub</title>
+</head>
+<body>
+
+<h2>Create Account</h2>
+
+<input type="email" id="email" placeholder="Email"><br><br>
+<input type="password" id="password" placeholder="Password"><br><br>
+
+<button id="registerBtn">Register</button>
+
+<p>Already have an account? <a href="login.html">Login</a></p>
+
+<!-- 🔥 SCRIPT MUST BE AFTER THE ELEMENTS -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword } 
@@ -15,7 +33,9 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
-  document.getElementById("registerBtn").addEventListener("click", () => {
+  const registerBtn = document.getElementById("registerBtn");
+
+  registerBtn.addEventListener("click", () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
@@ -32,3 +52,6 @@
       .catch(error => alert(error.message));
   });
 </script>
+
+</body>
+</html>
