@@ -1,3 +1,4 @@
+/* ===== Body ===== */
 body {
     background: #0f0f0f;
     color: #fff;
@@ -6,14 +7,22 @@ body {
     padding: 50px 20px;
 }
 
+/* ===== Container ===== */
 .container {
     max-width: 600px;
     margin: 0 auto;
 }
 
-h2, h3 { margin-bottom: 20px; }
-#points { font-weight: bold; color: #00ff9c; }
+/* ===== Headings ===== */
+h2, h3 {
+    margin-bottom: 20px;
+}
+#points {
+    font-weight: bold;
+    color: #00ff9c;
+}
 
+/* ===== Task Items ===== */
 .task-item {
     background: #1a1a1a;
     padding: 15px;
@@ -23,10 +32,15 @@ h2, h3 { margin-bottom: 20px; }
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    text-align: center;
 }
 
-.task-item p { font-weight: bold; font-size: 16px; }
+.task-item p {
+    font-weight: bold;
+    font-size: 16px;
+}
 
+/* ===== Buttons ===== */
 .task-item .task-btn {
     padding: 8px 20px;
     background: #00ff9c;
@@ -38,10 +52,27 @@ h2, h3 { margin-bottom: 20px; }
     transition: all 0.2s;
 }
 
-.task-item .task-btn:disabled { background: #555; color: #aaa; cursor: not-allowed; }
-.task-item .task-btn:hover:not(:disabled) { background: #00cc7a; }
+.task-item .task-btn:disabled {
+    background: #555;
+    color: #aaa;
+    cursor: not-allowed;
+}
 
-.link-task { border: 2px solid #333; }
+.task-item .task-btn:hover:not(:disabled) {
+    background: #00cc7a;
+}
+
+/* ===== Link Tasks ===== */
+.link-task {
+    border: 2px solid #333;
+    padding: 8px;
+    border-radius: 8px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .link-task .task-link {
     display: inline-flex;
     align-items: center;
@@ -55,11 +86,22 @@ h2, h3 { margin-bottom: 20px; }
     transition: all 0.2s;
 }
 
-.link-task .task-link:hover { background: #00aaff; }
-.link-task .icon { width: 20px; height: 20px; }
+.link-task .task-link:hover {
+    background: #00aaff;
+}
 
-#completed-tasks .task-item { background: #333; opacity: 0.8; }
+.link-task .icon {
+    width: 20px;
+    height: 20px;
+}
 
+/* ===== Completed Tasks ===== */
+#completed-tasks .task-item {
+    background: #333;
+    opacity: 0.8;
+}
+
+/* ===== Logout Button ===== */
 #logoutBtn {
     margin-top: 20px;
     padding: 10px 20px;
@@ -71,14 +113,19 @@ h2, h3 { margin-bottom: 20px; }
     cursor: pointer;
     transition: all 0.2s;
 }
-#logoutBtn:hover { background: #e60000; }
 
+#logoutBtn:hover {
+    background: #e60000;
+}
+
+/* ===== Referral Section ===== */
 #referral-section {
     background: #222;
     padding: 15px;
     margin-bottom: 20px;
     border-radius: 8px;
 }
+
 #referral-section input {
     width: 90%;
     padding: 8px;
@@ -87,4 +134,30 @@ h2, h3 { margin-bottom: 20px; }
     border: none;
     text-align: center;
     font-weight: bold;
+}
+
+/* ===== Inputs for Registration/Login ===== */
+input[type="email"],
+input[type="password"] {
+    padding: 10px;
+    margin: 10px 0;
+    width: 80%;
+    border-radius: 5px;
+    border: none;
+}
+
+/* ===== General Responsive ===== */
+@media (max-width: 600px) {
+    .task-item {
+        font-size: 14px;
+    }
+
+    .link-task .task-link {
+        font-size: 14px;
+        padding: 6px;
+    }
+
+    #referral-section input {
+        width: 100%;
+    }
 }
