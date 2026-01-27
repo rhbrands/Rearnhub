@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - RearnHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h2>Welcome to RearnHub Dashboard</h2>
+  <p>You are now logged in.</p>
+
+  <button id="logoutBtn">Logout</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getAuth, signOut, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
+    authDomain: "rearnhub.firebaseapp.com",
+    projectId: "rearnhub",
+    storageBucket: "rearnhub.firebasestorage.app",
+    messagingSenderId: "461077159495",
+    appId: "1:461077159495:web:595412074b4c28de17db62"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Redirect to login if not logged in
+  onAuthStateChanged(auth, user => {
+    if (!user) window.location.href = "login.html";
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    signOut(auth).then(() => window.location.href = "login.html");
+  });
+</script>
+
+</body>
+</html>
