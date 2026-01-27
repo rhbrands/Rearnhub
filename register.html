@@ -10,6 +10,9 @@
 <div class="container">
   <h2>Create Account</h2>
 
+  <!-- Inline message container -->
+  <div id="message" class="message"></div>
+
   <input type="email" id="email" placeholder="Email"><br><br>
   <input type="password" id="password" placeholder="Password"><br><br>
 
@@ -36,22 +39,34 @@
   const auth = getAuth(app);
 
   const registerBtn = document.getElementById("registerBtn");
+  const messageDiv = document.getElementById("message");
 
   registerBtn.addEventListener("click", () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
     if (!email || !password) {
-      alert("Enter email and password");
+      messageDiv.textContent = "Enter email and password";
+      messageDiv.className = "message error";
+      messageDiv.style.display = "block";
       return;
     }
 
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
-        alert("Registration successful");
-        window.location.href = "dashboard.html";
+        messageDiv.textContent = "Registration successful!";
+        messageDiv.className = "message success";
+        messageDiv.style.display = "block";
+
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1500);
       })
-      .catch(error => alert(error.message));
+      .catch(error => {
+        messageDiv.textContent = error.message;
+        messageDiv.className = "message error";
+        messageDiv.style.display = "block";
+      });
   });
 </script>
 
