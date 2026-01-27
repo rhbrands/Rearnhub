@@ -1,11 +1,21 @@
+/* ===== BODY & BASE ===== */
 body {
     background: #0f0f0f;
     color: #fff;
     font-family: Arial, sans-serif;
     text-align: center;
     padding-top: 100px;
+    margin: 0;
 }
 
+/* ===== CONTAINER ===== */
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ===== LINKS AS BUTTONS ===== */
 a {
     display: inline-block;
     margin: 10px;
@@ -14,4 +24,68 @@ a {
     color: #000;
     text-decoration: none;
     border-radius: 5px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+a:hover {
+    background: #00cc7a;
+}
+
+/* ===== BUTTONS ===== */
+button {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    background: #00ff9c;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+button:hover {
+    background: #00cc7a;
+}
+
+/* ===== INPUT FIELDS ===== */
+input {
+    padding: 10px;
+    margin: 5px 0;
+    width: 250px;
+    border-radius: 5px;
+    border: 1px solid #00ff9c;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 16px;
+}
+
+input::placeholder {
+    color: #888;
+}
+
+/* ===== HEADINGS ===== */
+h1, h2 {
+    margin-bottom: 20px;
+}
+
+/* ===== PARAGRAPHS ===== */
+p {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 500px) {
+    input {
+        width: 80%;
+    }
+
+    a, button {
+        width: 80%;
+        padding: 12px;
+    }
 }
