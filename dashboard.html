@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Dashboard - RearnHub</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Dashboard - RearnHub</title>
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
-
 <div class="container">
   <h2>Welcome to RearnHub Dashboard</h2>
-
-  <!-- Points Display -->
   <p>Your Points: <span id="points">0</span></p>
 
   <!-- Referral Section -->
@@ -22,13 +19,13 @@
     <p>Referral Count: <span id="referralCount">0</span></p>
   </div>
 
-  <!-- Available Tasks Section -->
+  <!-- Tasks -->
   <div id="tasks-section">
     <h3>Available Tasks</h3>
     <div id="tasks"></div>
   </div>
 
-  <!-- Completed Tasks Section -->
+  <!-- Completed Tasks -->
   <div id="completed-section">
     <h3>Completed Tasks</h3>
     <div id="completed-tasks"></div>
@@ -42,7 +39,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebas
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
   authDomain: "rearnhub.firebaseapp.com",
@@ -65,7 +61,6 @@ const referralCountSpan = document.getElementById("referralCount");
 
 let userId = null;
 
-// ===== Task List =====
 const tasksList = [
   { id: "task1", title: "Join RearnHub Telegram", type: "link", points: 10, link: "https://t.me/YourTelegramChannel", icon: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
   { id: "task2", title: "Follow RearnHub on Twitter", type: "link", points: 15, link: "https://twitter.com/RearnHub", icon: "https://upload.wikimedia.org/wikipedia/en/6/60/Twitter_Logo_as_of_2021.svg" },
@@ -74,18 +69,15 @@ const tasksList = [
   { id: "task5", title: "Complete Task 5", type: "normal", points: 25 }
 ];
 
-// ===== Render Tasks Dynamically =====
 function renderTasks(completedTasks=[]) {
   tasksDiv.innerHTML = "";
   tasksList.forEach(task => {
     if(completedTasks.includes(task.id)) return;
-
     const taskDiv = document.createElement("div");
     taskDiv.classList.add("task-item");
     taskDiv.dataset.taskid = task.id;
 
     let html = `<p>${task.title}</p>`;
-
     if(task.type === "link") {
       taskDiv.classList.add("link-task");
       html += `<a href="${task.link}" target="_blank" class="task-link">
@@ -95,27 +87,22 @@ function renderTasks(completedTasks=[]) {
     } else {
       html += `<button class="task-btn" data-points="${task.points}">Mark as Complete</button>`;
     }
-
     taskDiv.innerHTML = html;
     tasksDiv.appendChild(taskDiv);
   });
 }
 
-// ===== Move Task to Completed Section =====
 function moveToCompleted(taskDiv) {
   taskDiv.querySelector(".task-btn")?.remove();
   completedDiv.appendChild(taskDiv);
 }
 
-// ===== Handle Task Completion =====
 async function handleTaskCompletion(button) {
   const taskDiv = button.closest(".task-item");
   const taskId = taskDiv.dataset.taskid;
   const task = tasksList.find(t => t.id === taskId);
   const pointsToAdd = task.points;
-
   if(!userId) return;
-
   const userDocRef = doc(db, "users", userId);
 
   const completeTask = async () => {
@@ -132,7 +119,6 @@ async function handleTaskCompletion(button) {
     let countdown = 5;
     const originalText = button.textContent;
     button.textContent = `Completing... ${countdown}s`;
-
     const interval = setInterval(() => {
       countdown--;
       if(countdown > 0) button.textContent = `Completing... ${countdown}s`;
@@ -150,25 +136,21 @@ async function handleTaskCompletion(button) {
   }
 }
 
-// ===== Event Listeners =====
 tasksDiv.addEventListener("click", e => {
   if(e.target.classList.contains("task-link")) {
     const taskDiv = e.target.closest(".task-item");
     const button = taskDiv.querySelector(".task-btn");
     if(button) button.disabled = false;
   }
-
   if(e.target.classList.contains("task-btn")) handleTaskCompletion(e.target);
 });
 
-// ===== Logout =====
 logoutBtn.addEventListener("click", () => {
-  signOut(auth).then(() => window.location.href = "login.html");
+  signOut(auth).then(() => window.location.href = "/Rearnhub/login.html");
 });
 
-// ===== Load User Data & Referral Info =====
 onAuthStateChanged(auth, async user => {
-  if(!user) window.location.href = "login.html";
+  if(!user) window.location.href = "/Rearnhub/login.html";
   else {
     userId = user.uid;
     const userDocRef = doc(db, "users", userId);
@@ -176,17 +158,14 @@ onAuthStateChanged(auth, async user => {
 
     if(docSnap.exists()) {
       pointsSpan.textContent = docSnap.data().points;
-
-      // Referral link
       let referralLink = docSnap.data()?.referralLink;
       if(!referralLink) {
-        referralLink = `${window.location.origin}/register.html?ref=${user.uid}`;
+        referralLink = `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`;
         await updateDoc(userDocRef, { referralLink, referralCount: 0 });
       }
       referralInput.value = referralLink;
       referralCountSpan.textContent = docSnap.data()?.referralCount || 0;
 
-      // Completed tasks
       const completed = docSnap.data().completedTasks || [];
       completed.forEach(taskId => {
         const taskDiv = document.querySelector(`.task-item[data-taskid="${taskId}"]`);
@@ -195,9 +174,9 @@ onAuthStateChanged(auth, async user => {
 
       renderTasks(completed);
     } else {
-      await setDoc(userDocRef, { points: 0, completedTasks: [], referralLink: `${window.location.origin}/register.html?ref=${user.uid}`, referralCount: 0 });
+      await setDoc(userDocRef, { points: 0, completedTasks: [], referralLink: `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`, referralCount: 0 });
       pointsSpan.textContent = 0;
-      referralInput.value = `${window.location.origin}/register.html?ref=${user.uid}`;
+      referralInput.value = `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`;
       referralCountSpan.textContent = 0;
       renderTasks();
     }
