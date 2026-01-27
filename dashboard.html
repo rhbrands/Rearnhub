@@ -40,6 +40,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebas
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
   authDomain: "rearnhub.firebaseapp.com",
@@ -53,16 +54,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// DOM Elements
 const pointsSpan = document.getElementById("points");
 const tasksDiv = document.getElementById("tasks");
-const logoutBtn = document.getElementById("logoutBtn");
 const completedDiv = document.getElementById("completed-tasks");
 const referralInput = document.getElementById("referralLinkInput");
 const referralCountSpan = document.getElementById("referralCount");
+const logoutBtn = document.getElementById("logoutBtn");
 
 let userId = null;
 
-// Tasks list (easily editable)
+// Define tasks (easy to add new tasks)
 const tasksList = [
   { id: "task1", title: "Join RearnHub Telegram", type: "link", points: 10, link: "https://t.me/YourTelegramChannel", icon: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" },
   { id: "task2", title: "Follow RearnHub on Twitter", type: "link", points: 15, link: "https://twitter.com/RearnHub", icon: "https://upload.wikimedia.org/wikipedia/en/6/60/Twitter_Logo_as_of_2021.svg" },
@@ -71,7 +73,7 @@ const tasksList = [
   { id: "task5", title: "Complete Task 5", type: "normal", points: 25 }
 ];
 
-// Render tasks
+// Render tasks that are not yet completed
 function renderTasks(completedTasks=[]) {
   tasksDiv.innerHTML = "";
   tasksList.forEach(task => {
@@ -95,13 +97,13 @@ function renderTasks(completedTasks=[]) {
   });
 }
 
-// Move completed task
+// Move completed task to completed section
 function moveToCompleted(taskDiv) {
   taskDiv.querySelector(".task-btn")?.remove();
   completedDiv.appendChild(taskDiv);
 }
 
-// Handle completion
+// Handle task completion
 async function handleTaskCompletion(button) {
   const taskDiv = button.closest(".task-item");
   const taskId = taskDiv.dataset.taskid;
@@ -156,7 +158,7 @@ logoutBtn.addEventListener("click", () => {
   signOut(auth).then(() => window.location.href = "/Rearnhub/login.html");
 });
 
-// Firebase auth listener
+// Auth listener
 onAuthStateChanged(auth, async user => {
   if(!user) window.location.href = "/Rearnhub/login.html";
   else {
@@ -165,7 +167,9 @@ onAuthStateChanged(auth, async user => {
     const docSnap = await getDoc(userDocRef);
 
     if(docSnap.exists()) {
-      pointsSpan.textContent = docSnap.data().points;
+      pointsSpan.textContent = docSnap.data().points || 0;
+
+      // Referral link
       let referralLink = docSnap.data()?.referralLink;
       if(!referralLink) {
         referralLink = `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`;
@@ -174,6 +178,7 @@ onAuthStateChanged(auth, async user => {
       referralInput.value = referralLink;
       referralCountSpan.textContent = docSnap.data()?.referralCount || 0;
 
+      // Completed tasks
       const completed = docSnap.data().completedTasks || [];
       completed.forEach(taskId => {
         const taskDiv = document.querySelector(`.task-item[data-taskid="${taskId}"]`);
@@ -182,6 +187,7 @@ onAuthStateChanged(auth, async user => {
 
       renderTasks(completed);
     } else {
+      // Initialize document if missing
       await setDoc(userDocRef, { points: 0, completedTasks: [], referralLink: `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`, referralCount: 0 });
       pointsSpan.textContent = 0;
       referralInput.value = `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`;
