@@ -13,28 +13,35 @@
   <!-- Points Display -->
   <p>Your Points: <span id="points">0</span></p>
 
-  <!-- Tasks List -->
-  <div id="tasks">
-    <h3>Tasks</h3>
+  <!-- Available Tasks Section -->
+  <div id="tasks-section">
+    <h3>Available Tasks</h3>
+    <div id="tasks">
+      <!-- Task 1 -->
+      <div class="task-item" data-taskid="task1">
+        <p>Task 1: Join RearnHub Telegram</p>
+        <a href="https://t.me/YourTelegramChannel" target="_blank" class="task-link">Go to Telegram</a>
+        <button class="task-btn" data-points="10">Mark as Complete</button>
+      </div>
 
-    <!-- Task 1: Join Telegram -->
-    <div class="task-item">
-      <p>Task 1: Join RearnHub Telegram</p>
-      <a href="https://t.me/YourTelegramChannel" target="_blank" class="task-link">Go to Telegram</a>
-      <button class="task-btn" data-points="10">Mark as Complete</button>
-    </div>
+      <!-- Task 2 -->
+      <div class="task-item" data-taskid="task2">
+        <p>Task 2: Complete Task 2</p>
+        <button class="task-btn" data-points="20">Mark as Complete</button>
+      </div>
 
-    <!-- Task 2 -->
-    <div class="task-item">
-      <p>Task 2: Complete Task 2</p>
-      <button class="task-btn" data-points="20">Mark as Complete</button>
+      <!-- Task 3 -->
+      <div class="task-item" data-taskid="task3">
+        <p>Task 3: Complete Task 3</p>
+        <button class="task-btn" data-points="30">Mark as Complete</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Task 3 -->
-    <div class="task-item">
-      <p>Task 3: Complete Task 3</p>
-      <button class="task-btn" data-points="30">Mark as Complete</button>
-    </div>
+  <!-- Completed Tasks Section -->
+  <div id="completed-section">
+    <h3>Completed Tasks</h3>
+    <div id="completed-tasks"></div>
   </div>
 
   <button id="logoutBtn">Logout</button>
@@ -44,7 +51,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged } 
   from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc } 
+import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } 
   from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -76,27 +83,54 @@ onAuthStateChanged(auth, async user => {
 
   const userDocRef = doc(db, "users", userId);
   const docSnap = await getDoc(userDocRef);
+
   if (docSnap.exists()) {
     pointsSpan.textContent = docSnap.data().points;
+    const completed = docSnap.data().completedTasks || [];
+
+    // Move completed tasks to completed section
+    completed.forEach(taskId => {
+      const taskDiv = document.querySelector(`.task-item[data-taskid="${taskId}"]`);
+      if (taskDiv) moveToCompleted(taskDiv);
+    });
   } else {
-    await setDoc(userDocRef, { points: 0 });
+    await setDoc(userDocRef, { points: 0, completedTasks: [] });
     pointsSpan.textContent = 0;
   }
 });
 
-// Task completion with 5-second delay for Task 1
+// Function to move task to completed section
+function moveToCompleted(taskDiv) {
+  const completedTasksDiv = document.getElementById("completed-tasks");
+  taskDiv.querySelector(".task-btn")?.remove(); // remove button
+  completedTasksDiv.appendChild(taskDiv);
+}
+
+// Task completion listener
 tasksDiv.addEventListener("click", async e => {
   if (!e.target.classList.contains("task-btn")) return;
   const button = e.target;
+  const taskDiv = button.closest(".task-item");
+  const taskId = taskDiv.dataset.taskid;
   const pointsToAdd = parseInt(button.dataset.points);
   if (!userId) return;
 
-  // Check if this is Task 1
-  const taskItem = button.closest(".task-item");
-  const isTelegramTask = taskItem.querySelector(".task-link") !== null;
+  const userDocRef = doc(db, "users", userId);
+  const isTelegramTask = taskDiv.querySelector(".task-link") !== null;
+
+  const completeTask = async () => {
+    // Update points and completed tasks array
+    await updateDoc(userDocRef, {
+      points: (parseInt(pointsSpan.textContent) || 0) + pointsToAdd,
+      completedTasks: arrayUnion(taskId)
+    });
+
+    pointsSpan.textContent = parseInt(pointsSpan.textContent) + pointsToAdd;
+    moveToCompleted(taskDiv);
+  };
 
   if (isTelegramTask) {
-    // Disable button and show countdown
+    // Telegram task 5-second delay
     button.disabled = true;
     let countdown = 5;
     const originalText = button.textContent;
@@ -108,15 +142,7 @@ tasksDiv.addEventListener("click", async e => {
         button.textContent = `Completing... ${countdown}s`;
       } else {
         clearInterval(interval);
-
-        // Add points in Firestore
-        const userDocRef = doc(db, "users", userId);
-        updateDoc(userDocRef, {
-          points: (parseInt(pointsSpan.textContent) || 0) + pointsToAdd
-        }).then(() => {
-          pointsSpan.textContent = parseInt(pointsSpan.textContent) + pointsToAdd;
-          button.textContent = "Completed ✓";
-        }).catch(err => {
+        completeTask().catch(err => {
           button.textContent = originalText;
           button.disabled = false;
           alert("Error updating points: " + err.message);
@@ -124,15 +150,8 @@ tasksDiv.addEventListener("click", async e => {
       }
     }, 1000);
   } else {
-    // Other tasks: add points instantly
-    const userDocRef = doc(db, "users", userId);
-    updateDoc(userDocRef, {
-      points: (parseInt(pointsSpan.textContent) || 0) + pointsToAdd
-    }).then(() => {
-      pointsSpan.textContent = parseInt(pointsSpan.textContent) + pointsToAdd;
-      button.disabled = true;
-      button.textContent = "Completed ✓";
-    }).catch(err => alert("Error updating points: " + err.message));
+    // Other tasks: instant
+    completeTask().catch(err => alert("Error updating points: " + err.message));
   }
 });
 
