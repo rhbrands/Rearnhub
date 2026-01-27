@@ -25,6 +25,8 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword } 
     from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc } 
+    from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
@@ -37,11 +39,12 @@
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
 
   const registerBtn = document.getElementById("registerBtn");
   const messageDiv = document.getElementById("message");
 
-  registerBtn.addEventListener("click", () => {
+  registerBtn.addEventListener("click", async () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
@@ -52,21 +55,25 @@
       return;
     }
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        messageDiv.textContent = "Registration successful!";
-        messageDiv.className = "message success";
-        messageDiv.style.display = "block";
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userId = userCredential.user.uid;
 
-        setTimeout(() => {
-          window.location.href = "dashboard.html";
-        }, 1500);
-      })
-      .catch(error => {
-        messageDiv.textContent = error.message;
-        messageDiv.className = "message error";
-        messageDiv.style.display = "block";
-      });
+      // Initialize user points in Firestore
+      await setDoc(doc(db, "users", userId), { points: 0 });
+
+      messageDiv.textContent = "Registration successful!";
+      messageDiv.className = "message success";
+      messageDiv.style.display = "block";
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1500);
+    } catch (error) {
+      messageDiv.textContent = error.message;
+      messageDiv.className = "message error";
+      messageDiv.style.display = "block";
+    }
   });
 </script>
 
