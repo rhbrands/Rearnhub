@@ -1,4 +1,3 @@
-/* ===== GENERAL STYLES ===== */
 body {
     background: #0f0f0f;
     color: #fff;
@@ -12,17 +11,9 @@ body {
     margin: 0 auto;
 }
 
-h2, h3 {
-    margin-bottom: 20px;
-}
+h2, h3 { margin-bottom: 20px; }
+#points { font-weight: bold; color: #00ff9c; }
 
-/* ===== POINTS ===== */
-#points {
-    font-weight: bold;
-    color: #00ff9c;
-}
-
-/* ===== TASK ITEMS ===== */
 .task-item {
     background: #1a1a1a;
     padding: 15px;
@@ -34,13 +25,8 @@ h2, h3 {
     gap: 10px;
 }
 
-/* Paragraph inside task */
-.task-item p {
-    font-weight: bold;
-    font-size: 16px;
-}
+.task-item p { font-weight: bold; font-size: 16px; }
 
-/* ===== NORMAL TASK BUTTON ===== */
 .task-item .task-btn {
     padding: 8px 20px;
     background: #00ff9c;
@@ -52,21 +38,10 @@ h2, h3 {
     transition: all 0.2s;
 }
 
-.task-item .task-btn:disabled {
-    background: #555;
-    color: #aaa;
-    cursor: not-allowed;
-}
+.task-item .task-btn:disabled { background: #555; color: #aaa; cursor: not-allowed; }
+.task-item .task-btn:hover:not(:disabled) { background: #00cc7a; }
 
-.task-item .task-btn:hover:not(:disabled) {
-    background: #00cc7a;
-}
-
-/* ===== LINK TASKS (Telegram, Twitter, Discord, etc.) ===== */
-.link-task {
-    border: 2px solid #333;
-}
-
+.link-task { border: 2px solid #333; }
 .link-task .task-link {
     display: inline-flex;
     align-items: center;
@@ -80,40 +55,11 @@ h2, h3 {
     transition: all 0.2s;
 }
 
-.link-task .task-link:hover {
-    background: #00aaff;
-}
+.link-task .task-link:hover { background: #00aaff; }
+.link-task .icon { width: 20px; height: 20px; }
 
-/* Icon inside link button */
-.link-task .icon {
-    width: 20px;
-    height: 20px;
-}
+#completed-tasks .task-item { background: #333; opacity: 0.8; }
 
-/* Special colors for different link types */
-.link-task[data-taskid="task1"] .task-link { background: #0088cc; } /* Telegram */
-.link-task[data-taskid="task2"] .task-link { background: #1DA1F2; } /* Twitter */
-.link-task[data-taskid="task3"] .task-link { background: #7289DA; } /* Discord */
-.link-task[data-taskid="task4"] .task-link { background: #C13584; } /* Instagram */
-
-/* ===== TASK BUTTON NEXT TO LINK TASK ===== */
-.link-task .task-btn {
-    margin-top: 8px;
-    background: #00ff9c;
-}
-
-.link-task .task-btn:disabled {
-    background: #555;
-    color: #aaa;
-}
-
-/* ===== COMPLETED TASKS SECTION ===== */
-#completed-tasks .task-item {
-    background: #333;
-    opacity: 0.8;
-}
-
-/* ===== LOGOUT BUTTON ===== */
 #logoutBtn {
     margin-top: 20px;
     padding: 10px 20px;
@@ -125,7 +71,20 @@ h2, h3 {
     cursor: pointer;
     transition: all 0.2s;
 }
+#logoutBtn:hover { background: #e60000; }
 
-#logoutBtn:hover {
-    background: #e60000;
+#referral-section {
+    background: #222;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+#referral-section input {
+    width: 90%;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: none;
+    text-align: center;
+    font-weight: bold;
 }
