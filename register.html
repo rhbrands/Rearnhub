@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Register - RearnHub</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Create Account</h2>
+<div class="container">
+  <h2>Create Account</h2>
 
-<input type="email" id="email" placeholder="Email"><br><br>
-<input type="password" id="password" placeholder="Password"><br><br>
+  <input type="email" id="email" placeholder="Email"><br><br>
+  <input type="password" id="password" placeholder="Password"><br><br>
 
-<button id="registerBtn">Register</button>
+  <button id="registerBtn">Register</button>
 
-<p>Already have an account? <a href="login.html">Login</a></p>
+  <p>Already have an account? <a href="login.html">Login</a></p>
+</div>
 
-<!-- 🔥 SCRIPT MUST BE AFTER THE ELEMENTS -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword } 
