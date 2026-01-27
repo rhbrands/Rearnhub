@@ -1,4 +1,3 @@
-/* ===== BODY & BASE ===== */
 body {
     background: #0f0f0f;
     color: #fff;
@@ -8,14 +7,12 @@ body {
     margin: 0;
 }
 
-/* ===== CONTAINER ===== */
 .container {
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* ===== LINKS AS BUTTONS ===== */
 a {
     display: inline-block;
     margin: 10px;
@@ -32,7 +29,6 @@ a:hover {
     background: #00cc7a;
 }
 
-/* ===== BUTTONS ===== */
 button {
     display: inline-block;
     margin: 10px;
@@ -51,7 +47,6 @@ button:hover {
     background: #00cc7a;
 }
 
-/* ===== INPUT FIELDS ===== */
 input {
     padding: 10px;
     margin: 5px 0;
@@ -67,18 +62,15 @@ input::placeholder {
     color: #888;
 }
 
-/* ===== HEADINGS ===== */
 h1, h2 {
     margin-bottom: 20px;
 }
 
-/* ===== PARAGRAPHS ===== */
 p {
     margin-bottom: 20px;
     font-size: 18px;
 }
 
-/* ===== MESSAGE BOX ===== */
 .message {
     margin-bottom: 15px;
     padding: 10px;
@@ -97,7 +89,6 @@ p {
     color: #fff;
 }
 
-/* ===== RESPONSIVE ===== */
 @media screen and (max-width: 500px) {
     input {
         width: 80%;
