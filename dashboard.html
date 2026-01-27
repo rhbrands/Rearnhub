@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Dashboard - RearnHub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
@@ -18,6 +18,7 @@
     <p>Your Referral Link:</p>
     <input type="text" id="referralLinkInput" readonly>
     <p>Referral Count: <span id="referralCount">0</span></p>
+    <small style="opacity:0.7">Share your link. Each successful signup earns ₦1,000 credited to your account.</small>
   </div>
 
   <!-- Tasks Section -->
@@ -39,6 +40,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const BASE_PATH = "/Rearnhub"; // GitHub Pages path
 
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
@@ -71,7 +74,6 @@ const tasksList = [
   { id: "task5", title: "Complete Task 5", type: "normal", points: 25 }
 ];
 
-// Render tasks that are not yet completed
 function renderTasks(completedTasks=[]) {
   tasksDiv.innerHTML = "";
   tasksList.forEach(task => {
@@ -95,13 +97,11 @@ function renderTasks(completedTasks=[]) {
   });
 }
 
-// Move completed task to completed section
 function moveToCompleted(taskDiv) {
   taskDiv.querySelector(".task-btn")?.remove();
   completedDiv.appendChild(taskDiv);
 }
 
-// Handle task completion
 async function handleTaskCompletion(button) {
   const taskDiv = button.closest(".task-item");
   const taskId = taskDiv.dataset.taskid;
@@ -141,7 +141,6 @@ async function handleTaskCompletion(button) {
   }
 }
 
-// Enable mark as complete on link click
 tasksDiv.addEventListener("click", e => {
   if(e.target.classList.contains("task-link")) {
     const taskDiv = e.target.closest(".task-item");
@@ -151,28 +150,22 @@ tasksDiv.addEventListener("click", e => {
   if(e.target.classList.contains("task-btn")) handleTaskCompletion(e.target);
 });
 
-// Logout button
 logoutBtn.addEventListener("click", () => {
-  signOut(auth).then(() => window.location.href = "/Rearnhub/login.html");
+  signOut(auth).then(() => window.location.href = `${BASE_PATH}/login.html`);
 });
 
-// Firebase auth listener
 onAuthStateChanged(auth, async user => {
-  if(!user) window.location.href = "/Rearnhub/login.html";
+  if(!user) window.location.href = `${BASE_PATH}/login.html`;
   else {
     userId = user.uid;
     const userDocRef = doc(db, "users", userId);
     const docSnap = await getDoc(userDocRef);
 
     if(docSnap.exists()) {
-      pointsSpan.textContent = docSnap.data().points;
+      pointsSpan.textContent = docSnap.data().points || 0;
 
-      // Generate referral link correctly with /Rearnhub/
-      let referralLink = docSnap.data()?.referralLink;
-      if(!referralLink) {
-        referralLink = `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`;
-        await updateDoc(userDocRef, { referralLink, referralCount: 0 });
-      }
+      const referralLink = `${window.location.origin}${BASE_PATH}/register.html?ref=${user.uid}`;
+      await updateDoc(userDocRef, { referralLink });
       referralInput.value = referralLink;
       referralCountSpan.textContent = docSnap.data()?.referralCount || 0;
 
@@ -184,9 +177,9 @@ onAuthStateChanged(auth, async user => {
 
       renderTasks(completed);
     } else {
-      await setDoc(userDocRef, { points: 0, completedTasks: [], referralLink: `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`, referralCount: 0 });
+      await setDoc(userDocRef, { points: 0, completedTasks: [], referralLink: `${window.location.origin}${BASE_PATH}/register.html?ref=${user.uid}`, referralCount: 0 });
       pointsSpan.textContent = 0;
-      referralInput.value = `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`;
+      referralInput.value = `${window.location.origin}${BASE_PATH}/register.html?ref=${user.uid}`;
       referralCountSpan.textContent = 0;
       renderTasks();
     }
