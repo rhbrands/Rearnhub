@@ -89,6 +89,35 @@ p {
     color: #fff;
 }
 
+/* Task Styling */
+.task-item {
+    border: 1px solid #00ff9c;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.task-link {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 6px 12px;
+    background: #00cc7a;
+    color: #000;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.task-link:hover {
+    background: #00ff9c;
+}
+
+#completed-tasks .task-item {
+    background: #222;
+    border-color: #555;
+    color: #aaa;
+}
+
 @media screen and (max-width: 500px) {
     input {
         width: 80%;
