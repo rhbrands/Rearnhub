@@ -16,9 +16,25 @@
   <!-- Tasks List -->
   <div id="tasks">
     <h3>Tasks</h3>
-    <button class="task-btn" data-points="10">Complete Task 1 (+10 pts)</button>
-    <button class="task-btn" data-points="20">Complete Task 2 (+20 pts)</button>
-    <button class="task-btn" data-points="30">Complete Task 3 (+30 pts)</button>
+
+    <!-- Task 1: Join Telegram -->
+    <div class="task-item">
+      <p>Task 1: Join RearnHub Telegram</p>
+      <a href="https://t.me/YourTelegramChannel" target="_blank" class="task-link">Go to Telegram</a>
+      <button class="task-btn" data-points="10">Mark as Complete</button>
+    </div>
+
+    <!-- Task 2 -->
+    <div class="task-item">
+      <p>Task 2: Complete Task 2</p>
+      <button class="task-btn" data-points="20">Mark as Complete</button>
+    </div>
+
+    <!-- Task 3 -->
+    <div class="task-item">
+      <p>Task 3: Complete Task 3</p>
+      <button class="task-btn" data-points="30">Mark as Complete</button>
+    </div>
   </div>
 
   <button id="logoutBtn">Logout</button>
@@ -68,22 +84,56 @@ onAuthStateChanged(auth, async user => {
   }
 });
 
-// Task completion
+// Task completion with 5-second delay for Task 1
 tasksDiv.addEventListener("click", async e => {
   if (!e.target.classList.contains("task-btn")) return;
-  const pointsToAdd = parseInt(e.target.dataset.points);
+  const button = e.target;
+  const pointsToAdd = parseInt(button.dataset.points);
   if (!userId) return;
 
-  const userDocRef = doc(db, "users", userId);
+  // Check if this is Task 1
+  const taskItem = button.closest(".task-item");
+  const isTelegramTask = taskItem.querySelector(".task-link") !== null;
 
-  await updateDoc(userDocRef, {
-    points: (parseInt(pointsSpan.textContent) || 0) + pointsToAdd
-  });
+  if (isTelegramTask) {
+    // Disable button and show countdown
+    button.disabled = true;
+    let countdown = 5;
+    const originalText = button.textContent;
+    button.textContent = `Completing... ${countdown}s`;
 
-  pointsSpan.textContent = parseInt(pointsSpan.textContent) + pointsToAdd;
+    const interval = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        button.textContent = `Completing... ${countdown}s`;
+      } else {
+        clearInterval(interval);
 
-  e.target.disabled = true;
-  e.target.textContent = "Completed ✓";
+        // Add points in Firestore
+        const userDocRef = doc(db, "users", userId);
+        updateDoc(userDocRef, {
+          points: (parseInt(pointsSpan.textContent) || 0) + pointsToAdd
+        }).then(() => {
+          pointsSpan.textContent = parseInt(pointsSpan.textContent) + pointsToAdd;
+          button.textContent = "Completed ✓";
+        }).catch(err => {
+          button.textContent = originalText;
+          button.disabled = false;
+          alert("Error updating points: " + err.message);
+        });
+      }
+    }, 1000);
+  } else {
+    // Other tasks: add points instantly
+    const userDocRef = doc(db, "users", userId);
+    updateDoc(userDocRef, {
+      points: (parseInt(pointsSpan.textContent) || 0) + pointsToAdd
+    }).then(() => {
+      pointsSpan.textContent = parseInt(pointsSpan.textContent) + pointsToAdd;
+      button.disabled = true;
+      button.textContent = "Completed ✓";
+    }).catch(err => alert("Error updating points: " + err.message));
+  }
 });
 
 // Logout
