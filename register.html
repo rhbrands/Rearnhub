@@ -33,7 +33,6 @@ const db = getFirestore(app);
 document.getElementById("registerBtn").addEventListener("click", () => {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-
   if(!email || !password) { alert("Enter email and password"); return; }
 
   createUserWithEmailAndPassword(auth, email, password)
@@ -52,7 +51,7 @@ document.getElementById("registerBtn").addEventListener("click", () => {
         await updateDoc(refDocRef, { referralCount: currentCount + 1 });
       }
 
-      // Redirect to dashboard inside Rearnhub folder
+      // Redirect to dashboard
       window.location.href = "/Rearnhub/dashboard.html";
     })
     .catch(err => alert(err.message));
