@@ -78,6 +78,25 @@ p {
     font-size: 18px;
 }
 
+/* ===== MESSAGE BOX ===== */
+.message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    display: none;
+    font-weight: bold;
+}
+
+.message.success {
+    background-color: #00ff9c;
+    color: #000;
+}
+
+.message.error {
+    background-color: #ff4c4c;
+    color: #fff;
+}
+
 /* ===== RESPONSIVE ===== */
 @media screen and (max-width: 500px) {
     input {
