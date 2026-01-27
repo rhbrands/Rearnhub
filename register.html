@@ -59,8 +59,8 @@
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const userId = userCredential.user.uid;
 
-      // Initialize user points in Firestore
-      await setDoc(doc(db, "users", userId), { points: 0 });
+      // Initialize user points and completed tasks in Firestore
+      await setDoc(doc(db, "users", userId), { points: 0, completedTasks: [] });
 
       messageDiv.textContent = "Registration successful!";
       messageDiv.className = "message success";
