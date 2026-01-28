@@ -17,15 +17,35 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Wait for DOM to load
-document.addEventListener("DOMContentLoaded", () => {
+// ------------------------------
+// Helper to safely attach logout button
+// ------------------------------
+function initLogoutButton() {
   const logoutBtn = document.getElementById("logoutBtn");
-  const userFullNameSpan = document.getElementById("userFullName");
+  if (!logoutBtn) return;
 
-  // Protect page & display user info
+  logoutBtn.onclick = async () => {
+    try {
+      await signOut(auth);
+      window.location.href = "login.html";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("Logout failed. Check console.");
+    }
+  };
+}
+
+// ------------------------------
+// Display full name & protect page
+// ------------------------------
+function initDashboard() {
+  const userFullNameSpan = document.getElementById("userFullName");
+  if (!userFullNameSpan) return;
+
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      window.location.href = "login.html"; // redirect if not logged in
+      // redirect if not logged in
+      window.location.href = "login.html";
       return;
     }
 
@@ -37,7 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const userData = userSnap.data();
         userFullNameSpan.textContent = userData.fullName || user.email;
       } else {
-        // fallback if Firestore doc missing
         userFullNameSpan.textContent = user.email;
       }
     } catch (error) {
@@ -45,16 +64,17 @@ document.addEventListener("DOMContentLoaded", () => {
       userFullNameSpan.textContent = user.email;
     }
   });
+}
 
-  // Logout button
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      try {
-        await signOut(auth);
-        window.location.href = "login.html";
-      } catch (error) {
-        console.error("Logout failed:", error);
-      }
-    });
-  }
-});
+// ------------------------------
+// Initialize dashboard after DOM is ready
+// ------------------------------
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    initDashboard();
+    initLogoutButton();
+  });
+} else {
+  initDashboard();
+  initLogoutButton();
+}
