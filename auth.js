@@ -34,6 +34,12 @@ function attachFormHandler(formId, callback) {
 // ----------------------
 // Registration
 // ----------------------
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+// Initialize Firestore
+const db = getFirestore(app);
+
+// Registration handler
 attachFormHandler("registerForm", async (form) => {
   const fullName = form.querySelector("#fullName").value.trim();
   const whatsapp = form.querySelector("#whatsapp").value.trim();
@@ -46,11 +52,17 @@ attachFormHandler("registerForm", async (form) => {
   }
 
   try {
-    await createUserWithEmailAndPassword(auth, email, password);
+    // Create auth user
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-    // Optionally save extra info in localStorage for now
-    localStorage.setItem("fullName", fullName);
-    localStorage.setItem("whatsapp", whatsapp);
+    // Save extra info in Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      fullName: fullName,
+      whatsapp: whatsapp,
+      email: email,
+      createdAt: new Date()
+    });
 
     alert("Account created successfully!");
     window.location.href = "dashboard.html";
@@ -58,6 +70,7 @@ attachFormHandler("registerForm", async (form) => {
     alert(error.message);
   }
 });
+
 
 // ----------------------
 // Login
