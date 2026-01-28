@@ -7,20 +7,26 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h2>Dashboard</h2>
-  <p id="welcome"></p>
-  <p>Your points: <span id="points">0</span></p>
+  <header>
+    <h1>RearnHub Dashboard</h1>
+  </header>
 
-  <h3>Tasks</h3>
-  <ul id="tasksList">
-    <li><button onclick="completeTask('Read Article')">Read Article (+10 pts)</button></li>
-    <li><button onclick="completeTask('Watch Video')">Watch Video (+15 pts)</button></li>
-  </ul>
+  <main>
+    <p id="welcome"></p>
+    <p>Your points: <span id="points">0</span></p>
 
-  <p>Share your referral link: <span id="refLink"></span></p>
+    <h3>Tasks</h3>
+    <ul id="tasksList">
+      <li><button id="task1Btn">Read Article (+10 pts)</button></li>
+      <li><button id="task2Btn">Watch Video (+15 pts)</button></li>
+    </ul>
 
-  <button id="logoutBtn">Logout</button>
+    <p>Share your referral link: <span id="refLink"></span></p>
 
+    <button id="logoutBtn">Logout</button>
+  </main>
+
+  <script type="module" src="js/auth.js"></script>
   <script type="module" src="js/tasks.js"></script>
 </body>
 </html>
