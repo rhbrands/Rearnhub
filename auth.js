@@ -1,5 +1,6 @@
+// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -11,15 +12,18 @@ const firebaseConfig = {
   appId: "1:461077159495:web:595412074b4c28de17db62"
 };
 
-// Init
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Register logic
-const form = document.getElementById("registerForm");
+console.log("Firebase initialized");
 
-if (form) {
-  form.addEventListener("submit", async (e) => {
+// ----------------------
+// Registration
+// ----------------------
+const registerForm = document.getElementById("registerForm");
+if (registerForm) {
+  registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const email = document.getElementById("email").value;
@@ -28,6 +32,27 @@ if (form) {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       alert("Account created successfully!");
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+}
+
+// ----------------------
+// Login
+// ----------------------
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("Login successful!");
       window.location.href = "dashboard.html";
     } catch (error) {
       alert(error.message);
