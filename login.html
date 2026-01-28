@@ -3,14 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
-<link rel="stylesheet" href="style.css">
+<title>Login - RearnHub</title>
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<h1>Login</h1>
-<input id="email" placeholder="Email">
-<input id="password" placeholder="Password">
-<button id="loginBtn">Login</button>
-<script type="module" src="js/auth.js"></script>
+<div class="container">
+  <h1>Login</h1>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button id="loginBtn">Login</button>
+</div>
+
+<script type="module">
+import { loginUser } from "./js/auth.js";
+loginUser();
+</script>
 </body>
 </html>
