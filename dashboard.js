@@ -18,9 +18,25 @@ const auth = getAuth(app);
 // Protect page: redirect if not logged in
 onAuthStateChanged(auth, user => {
   if (user) {
-    // Display full name from localStorage
-    const fullName = localStorage.getItem("fullName") || user.email;
-    document.getElementById("userFullName").textContent = fullName;
+    // Display full name from Firestore
+    import { getDoc, doc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    try {
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        document.getElementById("userFullName").textContent = userData.fullName;
+      } else {
+        document.getElementById("userFullName").textContent = user.email;
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      document.getElementById("userFullName").textContent = user.email;
+    }
   } else {
     window.location.href = "login.html";
   }
