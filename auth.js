@@ -35,16 +35,23 @@ function attachFormHandler(formId, callback) {
 // Registration
 // ----------------------
 attachFormHandler("registerForm", async (form) => {
+  const fullName = form.querySelector("#fullName").value.trim();
+  const whatsapp = form.querySelector("#whatsapp").value.trim();
   const email = form.querySelector("#email").value.trim();
   const password = form.querySelector("#password").value;
 
-  if (!email || !password) {
-    alert("Please enter both email and password.");
+  if (!fullName || !whatsapp || !email || !password) {
+    alert("Please fill in all required fields.");
     return;
   }
 
   try {
     await createUserWithEmailAndPassword(auth, email, password);
+
+    // Optionally save extra info in localStorage for now
+    localStorage.setItem("fullName", fullName);
+    localStorage.setItem("whatsapp", whatsapp);
+
     alert("Account created successfully!");
     window.location.href = "dashboard.html";
   } catch (error) {
