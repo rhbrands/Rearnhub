@@ -66,3 +66,19 @@ footer {
   font-size: 0.85rem;
   color: #777;
 }
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+input {
+  padding: 12px;
+  border-radius: 5px;
+  border: none;
+  font-size: 1rem;
+}
+
