@@ -17,30 +17,32 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Wait for DOM to fully load
+// Wait for DOM to load
 document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
+  const userFullNameSpan = document.getElementById("userFullName");
 
   // Protect page & display user info
   onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      try {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
+    if (!user) {
+      window.location.href = "login.html"; // redirect if not logged in
+      return;
+    }
 
-        if (docSnap.exists()) {
-          const userData = docSnap.data();
-          document.getElementById("userFullName").textContent = userData.fullName;
-        } else {
-          document.getElementById("userFullName").textContent = user.email;
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        document.getElementById("userFullName").textContent = user.email;
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        userFullNameSpan.textContent = userData.fullName || user.email;
+      } else {
+        // fallback if Firestore doc missing
+        userFullNameSpan.textContent = user.email;
       }
-    } else {
-      // Not logged in → redirect
-      window.location.href = "login.html";
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      userFullNameSpan.textContent = user.email;
     }
   });
 
@@ -51,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         await signOut(auth);
         window.location.href = "login.html";
       } catch (error) {
-        console.error("Logout error:", error);
+        console.error("Logout failed:", error);
       }
     });
   }
