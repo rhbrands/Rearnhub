@@ -1,22 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - RearnHub</title>
-<link rel="stylesheet" href="./style.css">
-</head>
-<body>
-<div class="container">
-  <h1>Login</h1>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-  <button id="loginBtn">Login</button>
-</div>
+<h2>Login</h2>
+<form id="loginForm">
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button type="submit">Login</button>
+</form>
+<p>Don't have an account? <a href="register.html">Sign Up</a></p>
 
-<script type="module">
-import { loginUser } from "./js/auth.js";
-loginUser();
-</script>
-</body>
-</html>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+<script src="js/auth.js"></script>
