@@ -18,9 +18,10 @@ const auth = getAuth(app);
 // Protect page: redirect if not logged in
 onAuthStateChanged(auth, user => {
   if (user) {
-    document.getElementById("userEmail").textContent = user.email;
+    // Display full name from localStorage
+    const fullName = localStorage.getItem("fullName") || user.email;
+    document.getElementById("userFullName").textContent = fullName;
   } else {
-    // Not logged in → redirect to login
     window.location.href = "login.html";
   }
 });
