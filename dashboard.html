@@ -7,25 +7,52 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header>
-    <h1>RearnHub Dashboard</h1>
+  <!-- HEADER -->
+  <header class="dashboard-header">
+    <div class="user-name" id="welcome"></div>
+    <div class="site-name">RearnHub</div>
   </header>
 
-  <main>
-    <p id="welcome"></p>
-    <p>Your points: <span id="points">0</span></p>
+  <!-- ACCOUNT BALANCE SECTION -->
+  <section class="account-balance">
+    <h2>Account Balance</h2>
+    <div class="balance-cards">
+      <div class="balance-card">
+        <h3>Task Balance</h3>
+        <p id="taskBalance">0</p>
+      </div>
+      <div class="balance-card">
+        <h3>Referral Balance</h3>
+        <p id="refBalance">0</p>
+      </div>
+      <div class="balance-card total">
+        <h3>Total Balance</h3>
+        <p id="totalBalance">0</p>
+      </div>
+    </div>
+  </section>
 
-    <h3>Tasks</h3>
+  <!-- REFERRAL SECTION -->
+  <section class="referral-section">
+    <h2>Referral</h2>
+    <p>Earn #1000.00 for each referral</p>
+    <p>Referral link:</p>
+    <input type="text" id="refLink" readonly>
+    <p>Referral count: <span id="refCount">0</span></p>
+  </section>
+
+  <!-- TASKS SECTION -->
+  <section class="tasks-section">
+    <h2>Tasks</h2>
     <ul id="tasksList">
       <li><button id="task1Btn">Read Article (+10 pts)</button></li>
       <li><button id="task2Btn">Watch Video (+15 pts)</button></li>
     </ul>
+  </section>
 
-    <p>Share your referral link: <span id="refLink"></span></p>
+  <button id="logoutBtn" class="logout-btn">Logout</button>
 
-    <button id="logoutBtn">Logout</button>
-  </main>
-
+  <!-- Scripts -->
   <script type="module" src="js/auth.js"></script>
   <script type="module" src="js/tasks.js"></script>
 </body>
