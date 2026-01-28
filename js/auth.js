@@ -19,30 +19,44 @@ const db = getFirestore();
 
 // 🔹 Signup
 const signupForm = document.getElementById("signupForm");
-if(signupForm){
+if (signupForm) {
   signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    // Show message to user
+    const msgEl = document.getElementById("signupMessage");
+    if (msgEl) msgEl.innerText = "Creating your account...";
+
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const referral = document.getElementById("referral").value;
 
     try {
+      // Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      // Redirect immediately
+      window.location.href = "dashboard.html";
+
+      // Then write user data to Firestore in the background
       await setDoc(doc(db, "users", user.uid), {
         name,
         email,
         points: 0,
         referral: referral || null
       });
-      alert("Signup successful!");
-      window.location.href = "dashboard.html";
+      
+      console.log("User document created in Firestore.");
+
     } catch (error) {
+      if (msgEl) msgEl.innerText = ""; // clear message
       alert(error.message);
     }
   });
 }
+
 
 // 🔹 Login
 const loginForm = document.getElementById("loginForm");
