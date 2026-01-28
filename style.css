@@ -1,0 +1,17 @@
+body {
+  background: #0f0f0f;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding-top: 100px;
+}
+
+a {
+  display: inline-block;
+  margin: 10px;
+  padding: 10px 20px;
+  background: #00ff9c;
+  color: #000;
+  text-decoration: none;
+  border-radius: 5px;
+}
