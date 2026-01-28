@@ -75,8 +75,15 @@ if(loginForm){
   });
 }
 
-// 🔹 Logout (for dashboard)
-window.logout = async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-};
+// Logout function
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      window.location.href = "login.html"; // redirect after logout
+    } catch (error) {
+      alert("Error logging out: " + error.message);
+    }
+  });
+}
