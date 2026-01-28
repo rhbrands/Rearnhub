@@ -1,34 +1,29 @@
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 const auth = getAuth();
 const db = getFirestore();
 
-onAuthStateChanged(auth, async user => {
-  if(!user){
-    window.location.href = "login.html";
-    return;
+function attachTask(buttonId, taskName, points) {
+  const btn = document.getElementById(buttonId);
+  if (btn) {
+    btn.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const userRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userRef);
+      let currentPoints = userDoc.data().points || 0;
+
+      currentPoints += points;
+      await updateDoc(userRef, { points: currentPoints });
+      document.getElementById("points").innerText = currentPoints;
+
+      alert(`Task "${taskName}" completed! +${points} points`);
+    });
   }
+}
 
-  const userDoc = await getDoc(doc(db, "users", user.uid));
-  const data = userDoc.data();
-  document.getElementById("welcome").innerText = `Welcome, ${data.name}`;
-  document.getElementById("points").innerText = data.points;
-  document.getElementById("refLink").innerText = `${window.location.origin}/register.html?ref=${user.uid}`;
-});
-
-window.completeTask = async (taskName) => {
-  const user = auth.currentUser;
-  if(!user) return;
-
-  const userRef = doc(db, "users", user.uid);
-  const userDoc = await getDoc(userRef);
-  let points = userDoc.data().points || 0;
-
-  const taskPoints = taskName === "Read Article" ? 10 : 15;
-  points += taskPoints;
-
-  await updateDoc(userRef, { points });
-  document.getElementById("points").innerText = points;
-  alert(`Task "${taskName}" completed! +${taskPoints} points`);
-};
+// Attach tasks
+attachTask("task1Btn", "Read Article", 10);
+attachTask("task2Btn", "Watch Video", 15);
