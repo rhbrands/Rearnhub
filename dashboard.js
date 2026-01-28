@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -14,37 +15,44 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Protect page: redirect if not logged in
-onAuthStateChanged(auth, user => {
-  if (user) {
-    // Display full name from Firestore
-    import { getDoc, doc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+// Wait for DOM to fully load
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logoutBtn");
 
-onAuthStateChanged(auth, async user => {
-  if (user) {
-    try {
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
+  // Protect page & display user info
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
 
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        document.getElementById("userFullName").textContent = userData.fullName;
-      } else {
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          document.getElementById("userFullName").textContent = userData.fullName;
+        } else {
+          document.getElementById("userFullName").textContent = user.email;
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
         document.getElementById("userFullName").textContent = user.email;
       }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      document.getElementById("userFullName").textContent = user.email;
+    } else {
+      // Not logged in → redirect
+      window.location.href = "login.html";
     }
-  } else {
-    window.location.href = "login.html";
-  }
-});
+  });
 
-// Logout button
-const logoutBtn = document.getElementById("logoutBtn");
-logoutBtn.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
+  // Logout button
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "login.html";
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    });
+  }
 });
