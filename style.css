@@ -82,3 +82,11 @@ input {
   font-size: 1rem;
 }
 
+form input {
+  padding: 12px;
+  border-radius: 5px;
+  border: none;
+  font-size: 1rem;
+  width: 100%;
+}
+
