@@ -44,11 +44,19 @@ if (registerForm) {
 // ----------------------
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  loginForm.addEventListener("submit", async function(e) {
+    e.preventDefault(); // prevents page refresh
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
