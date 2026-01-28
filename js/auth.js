@@ -1,8 +1,9 @@
+// Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-// 🔹 Your Firebase config
+// 🔹 Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
   authDomain: "rearnhub.firebaseapp.com",
@@ -13,77 +14,40 @@ const firebaseConfig = {
   measurementId: "G-YLCZ0TLE7G"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 
-// 🔹 Signup
-const signupForm = document.getElementById("signupForm");
-if (signupForm) {
-  signupForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    // Show message to user
-    const msgEl = document.getElementById("signupMessage");
-    if (msgEl) msgEl.innerText = "Creating your account...";
-
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const referral = document.getElementById("referral").value;
-
-    try {
-      // Create user in Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Redirect immediately
-      window.location.href = "dashboard.html";
-
-      // Then write user data to Firestore in the background
-      await setDoc(doc(db, "users", user.uid), {
-        name,
-        email,
-        points: 0,
-        referral: referral || null
-      });
-      
-      console.log("User document created in Firestore.");
-
-    } catch (error) {
-      if (msgEl) msgEl.innerText = ""; // clear message
-      alert(error.message);
-    }
-  });
-}
-
-
-// 🔹 Login
-const loginForm = document.getElementById("loginForm");
-if(loginForm){
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "dashboard.html";
-    } catch (error) {
-      alert(error.message);
-    }
-  });
-}
-
-// Logout function
+// 🔹 Logout button
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", async () => {
     try {
-      await signOut(auth);
-      window.location.href = "login.html"; // redirect after logout
+      await signOut(auth); // Sign out user
+      window.location.href = "login.html"; // Redirect to login
     } catch (error) {
       alert("Error logging out: " + error.message);
     }
   });
 }
+
+// 🔹 Check auth state on dashboard
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    // Redirect to login if not logged in
+    window.location.href = "login.html";
+    return;
+  }
+
+  // Load user data
+  const userRef = doc(db, "users", user.uid);
+  const userDoc = await getDoc(userRef);
+  const data = userDoc.data();
+
+  document.getElementById("welcome").innerText = `Welcome, ${data.name}`;
+  document.getElementById("points").innerText = data.points;
+
+  // Referral link
+  document.getElementById("refLink").innerText = `${window.location.origin}/Rearnhub/register.html?ref=${user.uid}`;
+});
