@@ -1,11 +1,26 @@
-<h2>Dashboard</h2>
-<p id="welcome"></p>
-<p>Your points: <span id="points">0</span></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - RearnHub</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <h2>Dashboard</h2>
+  <p id="welcome"></p>
+  <p>Your points: <span id="points">0</span></p>
 
-<h3>Tasks</h3>
-<ul id="tasksList">
-  <li><button onclick="completeTask('Read Article')">Read Article (+10 pts)</button></li>
-  <li><button onclick="completeTask('Watch Video')">Watch Video (+15 pts)</button></li>
-</ul>
+  <h3>Tasks</h3>
+  <ul id="tasksList">
+    <li><button onclick="completeTask('Read Article')">Read Article (+10 pts)</button></li>
+    <li><button onclick="completeTask('Watch Video')">Watch Video (+15 pts)</button></li>
+  </ul>
 
-<script type="module" src="js/tasks.js"></script>
+  <p>Share your referral link: <span id="refLink"></span></p>
+
+  <button onclick="logout()">Logout</button>
+
+  <script type="module" src="js/tasks.js"></script>
+</body>
+</html>
