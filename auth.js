@@ -19,51 +19,56 @@ const auth = getAuth(app);
 console.log("Firebase initialized");
 
 // ----------------------
-// Registration
+// Helper function to attach form handlers safely
 // ----------------------
-const registerForm = document.getElementById("registerForm");
-if (registerForm) {
-  registerForm.addEventListener("submit", async (e) => {
+function attachFormHandler(formId, callback) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+
+  form.addEventListener("submit", async function (e) {
     e.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("Account created successfully!");
-      window.location.href = "dashboard.html";
-    } catch (error) {
-      alert(error.message);
-    }
+    await callback(form);
   });
 }
+
+// ----------------------
+// Registration
+// ----------------------
+attachFormHandler("registerForm", async (form) => {
+  const email = form.querySelector("#email").value.trim();
+  const password = form.querySelector("#password").value;
+
+  if (!email || !password) {
+    alert("Please enter both email and password.");
+    return;
+  }
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    alert("Account created successfully!");
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    alert(error.message);
+  }
+});
 
 // ----------------------
 // Login
 // ----------------------
-const loginForm = document.getElementById("loginForm");
-if (loginForm) {
-  loginForm.addEventListener("submit", async function(e) {
-    e.preventDefault(); // prevents page refresh
+attachFormHandler("loginForm", async (form) => {
+  const email = form.querySelector("#email").value.trim();
+  const password = form.querySelector("#password").value;
 
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
+  if (!email || !password) {
+    alert("Please enter both email and password.");
+    return;
+  }
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!email || !password) {
-      alert("Please enter both email and password.");
-      return;
-    }
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert("Login successful!");
-      window.location.href = "dashboard.html";
-    } catch (error) {
-      alert(error.message);
-    }
-  });
-}
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Login successful!");
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    alert(error.message);
+  }
+});
