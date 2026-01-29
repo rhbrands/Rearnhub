@@ -4,9 +4,7 @@ import {
   getFirestore, doc, getDoc, updateDoc 
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-// ----------------------
 // Firebase config
-// ----------------------
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
   authDomain: "rearnhub.firebaseapp.com",
@@ -16,9 +14,7 @@ const firebaseConfig = {
   appId: "1:461077159495:web:595412074b4c28de17db62"
 };
 
-// ----------------------
-// Initialize Firebase (ONCE)
-// ----------------------
+// Initialize Firebase ONCE
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -33,56 +29,46 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // ----------------------
     // Fetch user
-    // ----------------------
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      console.error("User document not found");
-      return;
-    }
+    if (!userSnap.exists()) return;
 
     const userData = userSnap.data();
 
-    // ----------------------
-    // Header name
-    // ----------------------
-    userFullNameSpan.textContent =
-      userData.fullName || user.email;
+    // Show full name
+    userFullNameSpan.textContent = userData.fullName || user.email;
 
-    // ----------------------
-    // Task buttons logic
-    // ----------------------
-    const taskButtons = document.querySelectorAll(".task-card button");
+    // Handle task buttons
+    const taskCards = document.querySelectorAll(".task-card");
 
-    taskButtons.forEach((btn, index) => {
+    taskCards.forEach(card => {
+      const btn = card.querySelector("button");
+      const taskId = card.dataset.taskId;
+      const reward = Number(card.dataset.reward);
+
+      // Disable if already completed
+      if (userData.completedTasks?.[taskId]) {
+        btn.textContent = "Completed ✅";
+        btn.disabled = true;
+        return;
+      }
+
       btn.addEventListener("click", async () => {
-        const taskId = `task${index + 1}`;
-        const reward = 200;
-
-        // Prevent double reward
-        if (userData.completedTasks?.[taskId]) {
-          alert("Task already completed ❌");
-          return;
-        }
-
         await updateDoc(userRef, {
           balance: (userData.balance || 0) + reward,
           [`completedTasks.${taskId}`]: true
         });
 
-        alert("Task completed! Balance updated ✅");
+        btn.textContent = "Completed ✅";
         btn.disabled = true;
-        btn.textContent = "Completed";
+
+        alert(`Task completed! ₦${reward} added to your balance 🎉`);
       });
     });
   });
 
-  // ----------------------
-  // Back to dashboard
-  // ----------------------
+  // Back button
   if (backDashboardBtn) {
     backDashboardBtn.addEventListener("click", () => {
       window.location.href = "dashboard.html";
