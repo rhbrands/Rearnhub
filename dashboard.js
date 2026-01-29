@@ -97,6 +97,12 @@ if (referCountSpan) {
     referCountSpan.textContent = referralCount;
 }
 
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      userFullNameSpan.textContent = user.email;
+    }
+  });
+
       // ----------------------
 // Tasks Section
 // ----------------------
@@ -106,14 +112,6 @@ if (tasksBtn) {
     window.location.href = "tasks.html"; // link to your tasks page
   });
 }
-
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      userFullNameSpan.textContent = user.email;
-    }
-  });
-
-
   // Logout button
   logoutBtn.addEventListener("click", async () => {
     try {
