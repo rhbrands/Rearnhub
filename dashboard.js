@@ -1,8 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { 
-  getFirestore, doc, getDoc, collection, query, where, getDocs 
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot, collection, query, where, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -24,9 +22,13 @@ console.log("Dashboard JS loaded");
 document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const userFullNameSpan = document.getElementById("userFullName");
+  const tasksBtn = document.getElementById("tasksBtn");
+  const referLinkInput = document.getElementById("referLink");
+  const referCountSpan = document.getElementById("referCount");
+  const balanceAmount = document.querySelector(".balance-amount");
 
   if (!logoutBtn || !userFullNameSpan) {
-    console.error("Elements not found in DOM");
+    console.error("Required elements not found in DOM");
     return;
   }
 
@@ -37,82 +39,52 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    try {
-      // First, try to fetch by UID (new users)
-      let userData = null;
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+    const userRef = doc(db, "users", user.uid);
 
-      if (userSnap.exists()) {
-        userData = userSnap.data();
-        console.log("Fetched by UID:", userData);
-      } else {
-        // Fallback for old users: query by email
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("email", "==", user.email));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          userData = querySnapshot.docs[0].data();
-          console.log("Fetched by email:", userData);
-        }
+    // Real-time listener for user document
+    onSnapshot(userRef, async (docSnap) => {
+      if (!docSnap.exists()) {
+        // Initialize new user with balance 5000 if document doesn't exist
+        await setDoc(userRef, { balance: 5000 }, { merge: true });
+        if (balanceAmount) balanceAmount.textContent = "#5000";
+        if (userFullNameSpan) userFullNameSpan.textContent = user.email;
+        if (referCountSpan) referCountSpan.textContent = "0";
+        if (referLinkInput) referLinkInput.value = `https://rhbrands.github.io/Rearnhub/register?ref=${user.uid}`;
+        return;
       }
 
-// Display fullName
-if (userData && userData.fullName) {
-    userFullNameSpan.textContent = userData.fullName;
-} else {
-    userFullNameSpan.textContent = user.email;
-}
+      const userData = docSnap.data();
 
-// ----------------------
-// Account Balance Section
-// ----------------------
-const balanceAmount = document.querySelector(".balance-amount");
-if (balanceAmount) {
-    if (userData.balance === undefined || userData.balance === null) {
-        // Initialize new user's balance to 5000
-        await setDoc(doc(db, "users", user.uid), { balance: 5000 }, { merge: true });
-        balanceAmount.textContent = "#5000"; // merge: true keeps existing fields safe, only adds/updates balance
+      // Display full name
+      userFullNameSpan.textContent = userData.fullName || user.email;
 
-        console.log("New user balance initialized to 5000 on Dashboard page");
-    } else {
-        balanceAmount.textContent = `#${userData.balance}`;
-    }
-}
+      // Update balance
+      if (balanceAmount) {
+        balanceAmount.textContent = `#${userData.balance ?? 0}`;
+      }
 
-
-// ----------------------
-// Refer Section
-// ----------------------
-const referLinkInput = document.getElementById("referLink");
-const referCountSpan = document.getElementById("referCount");
-
-if (referLinkInput) {
-    referLinkInput.value = `https://rhbrands.github.io/Rearnhub/register?ref=${user.uid}`;
-}
-
-if (referCountSpan) {
-    const referralCount = userData && userData.referrals ? userData.referrals.length : 0;
-    referCountSpan.textContent = referralCount;
-}
-
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      userFullNameSpan.textContent = user.email;
-    }
+      // Update referral info
+      if (referLinkInput) {
+        referLinkInput.value = `https://rhbrands.github.io/Rearnhub/register?ref=${user.uid}`;
+      }
+      if (referCountSpan) {
+        referCountSpan.textContent = userData.referrals?.length || 0;
+      }
+    });
   });
 
-      // ----------------------
-// Tasks Section
-// ----------------------
-const tasksBtn = document.getElementById("tasksBtn");
-if (tasksBtn) {
-  tasksBtn.addEventListener("click", () => {
-    window.location.href = "tasks.html"; // link to your tasks page
-  });
-}
+  // ----------------------
+  // Tasks Button
+  // ----------------------
+  if (tasksBtn) {
+    tasksBtn.addEventListener("click", () => {
+      window.location.href = "tasks.html";
+    });
+  }
+
+  // ----------------------
   // Logout button
+  // ----------------------
   logoutBtn.addEventListener("click", async () => {
     try {
       await signOut(auth);
