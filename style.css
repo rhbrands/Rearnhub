@@ -95,18 +95,46 @@ form input {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #111;
-  color: #00ff9c;
+  background-color: #00ff9c; /* Header color different from body */
+  color: #000;
   padding: 20px 40px;
   font-weight: bold;
-  font-size: 1.1rem;
-}
-
-.dashboard-header .user-info {
-  text-align: right;
+  font-size: 1.2rem;
+  flex-wrap: wrap; /* makes it responsive */
 }
 
 .dashboard-header .site-name {
   text-align: left;
+  flex: 1 1 auto; /* site name grows if space allows */
 }
 
+.dashboard-header .user-info {
+  text-align: right;
+  flex: 1 1 auto;
+}
+
+/* Body of dashboard */
+.dashboard-main {
+  background-color: #0f0f0f; /* dark body */
+  color: #fff;
+  padding: 20px 40px;
+  min-height: calc(100vh - 80px); /* full height minus header */
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .dashboard-header .site-name,
+  .dashboard-header .user-info {
+    flex: 1 1 100%;
+    margin: 5px 0;
+  }
+
+  .dashboard-main {
+    padding: 15px 20px;
+  }
+}
