@@ -71,6 +71,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Example: Update balance dynamically
+const balanceAmount = document.querySelector(".balance-amount");
+balanceAmount.textContent = "#"; // replace # with real balance from Firebase
+
+
   // Logout button
   logoutBtn.addEventListener("click", async () => {
     try {
