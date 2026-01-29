@@ -69,6 +69,20 @@ if (passwordInput && passwordHint) {
 }
 
 // ----------------------
+// Show/Hide Password Toggle
+// ----------------------
+const togglePasswordBtn = document.getElementById("toggle-password");
+const passwordInput = document.getElementById("password");
+
+if (togglePasswordBtn && passwordInput) {
+  togglePasswordBtn.addEventListener("click", () => {
+    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+    passwordInput.setAttribute("type", type);
+    togglePasswordBtn.textContent = type === "password" ? "👁️" : "🙈";
+  });
+}
+
+// ----------------------
 // Helper function
 // ----------------------
 function attachFormHandler(formId, callback) {
