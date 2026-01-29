@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // Firebase config (same as dashboard)
 const firebaseConfig = {
@@ -11,26 +12,41 @@ const firebaseConfig = {
   appId: "1:461077159495:web:595412074b4c28de17db62"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Wait for DOM
 document.addEventListener("DOMContentLoaded", () => {
   const userFullNameSpan = document.getElementById("userFullName");
   const backDashboardBtn = document.getElementById("backDashboardBtn");
 
-  // Protect page
-  onAuthStateChanged(auth, (user) => {
+  // Protect page & fetch full name
+  onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "login.html";
       return;
     }
 
-    // Display name from localStorage for now (or fetch from Firestore if needed)
-    userFullNameSpan.textContent = localStorage.getItem("fullName") || user.email;
+    try {
+      // Fetch user from Firestore by UID
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        userFullNameSpan.textContent = userData.fullName || user.email;
+      } else {
+        userFullNameSpan.textContent = user.email;
+      }
+
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      userFullNameSpan.textContent = user.email;
+    }
   });
 
-  // Back button to dashboard
+  // Back button
   if (backDashboardBtn) {
     backDashboardBtn.addEventListener("click", () => {
       window.location.href = "dashboard.html";
