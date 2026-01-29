@@ -92,3 +92,13 @@ attachFormHandler("loginForm", async (form) => {
     alert(error.message);
   }
 });
+
+// Save extra info in Firestore
+await setDoc(doc(db, "users", user.uid), {
+  fullName: fullName,
+  whatsapp: whatsapp,
+  email: email,
+  balance: 5000,   // <-- new registration bonus
+  createdAt: new Date()
+});
+
