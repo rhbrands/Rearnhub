@@ -60,6 +60,8 @@ async function handleCompleteClick(completeBtn, userRef, taskId, reward, card, u
 document.addEventListener("DOMContentLoaded", () => {
   const userFullNameSpan = document.getElementById("userFullName");
   const backDashboardBtn = document.getElementById("backDashboardBtn");
+  const taskCards = document.querySelectorAll(".task-card");
+  const filterBtns = document.querySelectorAll(".filter-btn");
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) return window.location.href = "login.html";
@@ -70,8 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const userData = userSnap.data();
     userFullNameSpan.textContent = userData.fullName || user.email;
-
-    const taskCards = document.querySelectorAll(".task-card");
 
     // --- Initialize task cards ---
     taskCards.forEach(card => {
@@ -108,10 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // --- Social Task ---
       if (card.classList.contains("social-task")) {
         const joinBtn = card.querySelector(".join-btn");
-        const socialLink = card.dataset.socialLink;
-
         joinBtn.addEventListener("click", () => {
-          window.open(socialLink, "_blank");
+          window.open(card.dataset.socialLink, "_blank");
           if (isCompleted) return;
           activateCompleteBtn(completeBtn, userData, 10);
         });
@@ -122,10 +120,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // --- Other Task ---
       if (card.classList.contains("other-task")) {
         const startBtn = card.querySelector(".start-btn");
-        const taskLink = card.dataset.taskLink;
-
         startBtn.addEventListener("click", () => {
-          window.open(taskLink, "_blank");
+          window.open(card.dataset.taskLink, "_blank");
           if (isCompleted) return;
           activateCompleteBtn(completeBtn, userData, 30);
         });
@@ -135,7 +131,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // --- Filter tasks by category ---
-    const filterBtns = document.querySelectorAll(".filter-btn");
+    // Set "All" active on page load
+    const allBtn = document.querySelector('.filter-btn[data-category="all"]');
+    allBtn?.classList.add("active");
+
     filterBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         const category = btn.dataset.category;
@@ -152,8 +151,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // --- Back to dashboard button ---
-    if (backDashboardBtn) {
-      backDashboardBtn.addEventListener("click", () => window.location.href = "dashboard.html");
-    }
+    backDashboardBtn?.addEventListener("click", () => window.location.href = "dashboard.html");
   });
 });
