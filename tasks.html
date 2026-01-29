@@ -20,39 +20,47 @@
   <h1>Available Tasks</h1>
   <p>Complete tasks to earn rewards.</p>
 
-  <!-- Video Tasks -->
-  <section class="tasks-category">
-    <h2>📺 Video Tasks</h2>
+ <!-- Video Tasks -->
+<section class="tasks-category">
+  <h2>📺 Video Tasks</h2>
 
-    <div class="task-card" data-task-id="video1" data-reward="200">
-      <h3>Watch Intro Video</h3>
-      <p>Watch a short video and earn ₦200</p>
-      <button class="btn btn-primary">Do Task</button>
-    </div>
-  </section>
+  <div class="task-card video-task" data-task-id="video1" data-reward="200" data-video-link="https://youtube.com/shorts/86VEfIvSUso?si=WuCTgmByS2fV7tM7">
+  <h3>Watch Intro Video</h3>
+  <p>Watch a short video and earn ₦200</p>
+  <!-- Watch Video button: opens video link -->
+  <button class="btn btn-primary watch-btn">Watch Video</button>
+  <!-- Mark as Complete button: initially disabled -->
+  <button class="btn btn-primary complete-btn" disabled>Mark as Complete</button>
+</div>
+
+</section>
 
   <!-- Social Tasks -->
   <section class="tasks-category">
     <h2>📣 Social Tasks</h2>
 
-    <div class="task-card" data-task-id="social1" data-reward="300">
-      <h3>Share on WhatsApp</h3>
-      <p>Share our link and earn ₦300</p>
-      <button class="btn btn-primary">Do Task</button>
-    </div>
+    <div class="task-card social-task" data-task-id="social1" data-reward="300" data-social-link="https://t.me/rstarfx">
+  <h3>Join Telegram</h3>
+  <p>Join our Telegram channel and earn ₦300</p>
+  <!-- Join Telegram button -->
+  <button class="btn btn-primary join-btn">Join Telegram</button>
+  <!-- Mark as Complete button: initially disabled -->
+  <button class="btn btn-primary complete-btn" disabled>Mark as Complete</button>
+</div>
+
   </section>
 
-  <!-- Simple Tasks -->
-  <section class="tasks-category">
-    <h2>🧠 Simple Tasks</h2>
-
-    <div class="task-card" data-task-id="simple1" data-reward="100">
-      <h3>Daily Login</h3>
-      <p>Login today and earn ₦100</p>
-      <button class="btn btn-primary">Do Task</button>
-    </div>
-  </section>
-
+  <!-- Other Tasks -->
+<section class="tasks-category">
+  <h2>🧠 Other Tasks</h2>
+  <div class="task-card other-task" data-task-id="other1" data-reward="100" data-task-link="https://sureentertaiment.blogspot.com/">
+    <h3>Visit Site</h3>
+    <p>Complete this task and earn ₦100</p>
+    <button class="btn btn-primary start-btn">Start Task</button>
+    <button class="btn btn-primary complete-btn" disabled>Mark as Complete</button>
+  </div>
+</section>
+    
   <button id="backDashboardBtn" class="btn btn-outline" style="margin-top: 20px;">
     Back to Dashboard
   </button>
