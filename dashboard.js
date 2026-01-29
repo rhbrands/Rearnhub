@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -14,8 +15,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-console.log("Dashboard JS loaded"); // <-- check if this appears in console
+console.log("Dashboard JS loaded");
 
 // Wait for DOM to exist
 document.addEventListener("DOMContentLoaded", () => {
@@ -27,13 +29,27 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Protect page
-  onAuthStateChanged(auth, user => {
+  // Protect page & display full name from Firestore
+  onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "login.html";
-    } else {
-      // Use localStorage for now to display name
-      userFullNameSpan.textContent = localStorage.getItem("fullName") || user.email;
+      return;
+    }
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        userFullNameSpan.textContent = userData.fullName || user.email;
+      } else {
+        // fallback for old users without Firestore doc
+        userFullNameSpan.textContent = user.email;
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      userFullNameSpan.textContent = user.email;
     }
   });
 
