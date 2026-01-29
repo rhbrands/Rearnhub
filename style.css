@@ -288,3 +288,44 @@ form input {
   cursor: default;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* Highlight completed tasks with glow and smooth animation */
+.task-completed {
+  background-color: #1b2f1b; /* darker green background for contrast */
+  border: 2px solid #00ff9c; /* bright green border */
+  color: #00ff9c; /* text color green */
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #00ff9c, 0 0 20px #00ff9c;
+  transition: all 0.4s ease;
+}
+
+/* Smooth hover effect even after completion */
+.task-completed:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0 15px #00ff9c, 0 0 25px #00ff9c;
+}
+
+/* Completed button style */
+.task-completed button {
+  background-color: #00ff9c; /* green button */
+  color: #000; /* text black for contrast */
+  cursor: default;
+  pointer-events: none; /* prevent further clicks */
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+/* Optional: subtle animation on task completion */
+@keyframes taskPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1.05); }
+}
+
+.task-completed {
+  animation: taskPop 0.4s ease forwards;
+}
+
