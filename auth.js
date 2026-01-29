@@ -1,6 +1,15 @@
 // Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -15,17 +24,16 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
-console.log("Firebase initialized");
+const db = getFirestore(app);
 
 // ----------------------
-// Helper function to attach form handlers safely
+// Helper function
 // ----------------------
 function attachFormHandler(formId, callback) {
   const form = document.getElementById(formId);
   if (!form) return;
 
-  form.addEventListener("submit", async function (e) {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     await callback(form);
   });
@@ -34,71 +42,78 @@ function attachFormHandler(formId, callback) {
 // ----------------------
 // Registration
 // ----------------------
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-
-// Initialize Firestore
-const db = getFirestore(app);
-
-// Registration handler
 attachFormHandler("registerForm", async (form) => {
+  const messageBox = document.getElementById("register-message");
+
   const fullName = form.querySelector("#fullName").value.trim();
   const whatsapp = form.querySelector("#whatsapp").value.trim();
   const email = form.querySelector("#email").value.trim();
   const password = form.querySelector("#password").value;
 
+  messageBox.textContent = "";
+  messageBox.className = "form-message";
+
   if (!fullName || !whatsapp || !email || !password) {
-    alert("Please fill in all required fields.");
+    messageBox.textContent = "Please fill in all required fields.";
+    messageBox.classList.add("error");
     return;
   }
 
   try {
-    // Create auth user
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Save extra info in Firestore
     await setDoc(doc(db, "users", user.uid), {
-      fullName: fullName,
-      whatsapp: whatsapp,
-      email: email,
+      fullName,
+      whatsapp,
+      email,
+      balance: 5000, // registration bonus
       createdAt: new Date()
     });
 
-    alert("Account created successfully!");
-    window.location.href = "dashboard.html";
+    messageBox.textContent = "Account created successfully! Redirecting...";
+    messageBox.classList.add("success");
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 1500);
+
   } catch (error) {
-    alert(error.message);
+    messageBox.textContent = error.message;
+    messageBox.classList.add("error");
   }
 });
-
 
 // ----------------------
 // Login
 // ----------------------
 attachFormHandler("loginForm", async (form) => {
+  const messageBox = document.getElementById("login-message");
+
   const email = form.querySelector("#email").value.trim();
   const password = form.querySelector("#password").value;
 
+  messageBox.textContent = "";
+  messageBox.className = "form-message";
+
   if (!email || !password) {
-    alert("Please enter both email and password.");
+    messageBox.textContent = "Please enter both email and password.";
+    messageBox.classList.add("error");
     return;
   }
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    alert("Login successful!");
-    window.location.href = "dashboard.html";
+
+    messageBox.textContent = "Login successful! Redirecting...";
+    messageBox.classList.add("success");
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 1500);
+
   } catch (error) {
-    alert(error.message);
+    messageBox.textContent = error.message;
+    messageBox.classList.add("error");
   }
 });
-
-// Save extra info in Firestore
-await setDoc(doc(db, "users", user.uid), {
-  fullName: fullName,
-  whatsapp: whatsapp,
-  email: email,
-  balance: 5000,   // <-- new registration bonus
-  createdAt: new Date()
-});
-
