@@ -127,3 +127,41 @@ form input {
     margin: 5px 0;
   }
 }
+
+/* Dashboard Sections */
+.dashboard-main {
+  background-color: #0f0f0f;
+  color: #fff;
+  padding: 20px 40px;
+  min-height: calc(100vh - 80px); /* full height minus header */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Individual Section Box */
+.dashboard-section {
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Balance Section */
+.balance-section .balance-amount {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 10px;
+  color: #00ff9c;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-main {
+    grid-template-columns: 1fr;
+  }
+}
