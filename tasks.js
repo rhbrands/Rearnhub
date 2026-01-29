@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // ----------------------
 // Firebase config
@@ -24,6 +24,28 @@ const db = getFirestore(app);
 document.addEventListener("DOMContentLoaded", () => {
   const userFullNameSpan = document.getElementById("userFullName");
   const backDashboardBtn = document.getElementById("backDashboardBtn");
+  const balanceAmount = document.querySelector(".balance-amount"); // optional, for live balance
+
+  // ----------------------
+  // Toast helper
+  // ----------------------
+  const showToast = (message) => {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.top = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = "#00ff9c";
+    toast.style.color = "#000";
+    toast.style.padding = "10px 20px";
+    toast.style.borderRadius = "5px";
+    toast.style.fontWeight = "bold";
+    toast.style.zIndex = "9999";
+    toast.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  };
 
   // ----------------------
   // Auth check
@@ -36,55 +58,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const userRef = doc(db, "users", user.uid);
 
-    // Fetch user once
-    const userSnap = await getDoc(userRef);
-    if (!userSnap.exists()) return;
+    // ----------------------
+    // Real-time snapshot for live balance updates
+    // ----------------------
+    onSnapshot(userRef, (docSnap) => {
+      if (!docSnap.exists()) return;
 
-    const userData = userSnap.data();
+      const userData = docSnap.data();
 
-    // Show full name
-    userFullNameSpan.textContent = userData.fullName || user.email;
+      // Show full name
+      userFullNameSpan.textContent = userData.fullName || user.email;
+
+      // Update balance dynamically
+      if (balanceAmount) {
+        balanceAmount.textContent = `#${userData.balance || 0}`;
+      }
+
+      // Update task cards for already completed tasks
+      const taskCards = document.querySelectorAll(".task-card");
+      taskCards.forEach(card => {
+        const btn = card.querySelector("button");
+        const taskId = card.dataset.taskId;
+
+        if (userData.completedTasks?.[taskId]) {
+          btn.textContent = "Completed ✅";
+          btn.disabled = true;
+          card.classList.add("task-completed");
+        }
+      });
+    });
 
     // ----------------------
-    // Task buttons
+    // Task buttons click
     // ----------------------
     const taskCards = document.querySelectorAll(".task-card");
-
     taskCards.forEach(card => {
       const btn = card.querySelector("button");
       const taskId = card.dataset.taskId;
       const reward = Number(card.dataset.reward);
 
-      // Disable if already completed
-      if (userData.completedTasks?.[taskId]) {
-        btn.textContent = "Completed ✅";
-        btn.disabled = true;
-        card.classList.add("task-completed");
-        return;
-      }
-
       btn.addEventListener("click", async () => {
         try {
-          // Prevent double clicks
           btn.disabled = true;
           btn.textContent = "Processing... ⏳";
 
-          // Increment balance & mark task complete safely
+          // Safe increment and mark task complete
           await updateDoc(userRef, {
             balance: increment(reward),
             [`completedTasks.${taskId}`]: true
           });
 
-          // Update task UI
+          // Update UI instantly
           btn.textContent = "Completed ✅";
           card.classList.add("task-completed");
 
-          // Dashboard will update automatically if it uses onSnapshot
+          // Show toast
+          showToast(`Task completed! ₦${reward} added 🎉`);
+
         } catch (err) {
           console.error("Error completing task:", err);
           btn.disabled = false;
           btn.textContent = "Do Task";
-          alert("Failed to complete task. Try again.");
+          showToast("Failed to complete task. Try again.");
         }
       });
     });
