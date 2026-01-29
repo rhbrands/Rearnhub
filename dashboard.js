@@ -1,6 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { 
+  getFirestore, doc, getDoc, collection, query, where, getDocs 
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -19,7 +21,6 @@ const db = getFirestore(app);
 
 console.log("Dashboard JS loaded");
 
-// Wait for DOM to exist
 document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const userFullNameSpan = document.getElementById("userFullName");
@@ -29,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Protect page & display full name from Firestore
+  // Protect page & display full name
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "login.html";
@@ -37,16 +38,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
+      // First, try to fetch by UID (new users)
+      let userData = null;
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
-        const userData = userSnap.data();
-        userFullNameSpan.textContent = userData.fullName || user.email;
+        userData = userSnap.data();
+        console.log("Fetched by UID:", userData);
       } else {
-        // fallback for old users without Firestore doc
+        // Fallback for old users: query by email
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", user.email));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          userData = querySnapshot.docs[0].data();
+          console.log("Fetched by email:", userData);
+        }
+      }
+
+      // Display fullName if available, else fallback to email
+      if (userData && userData.fullName) {
+        userFullNameSpan.textContent = userData.fullName;
+      } else {
         userFullNameSpan.textContent = user.email;
       }
+
     } catch (error) {
       console.error("Error fetching user data:", error);
       userFullNameSpan.textContent = user.email;
