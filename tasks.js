@@ -19,6 +19,7 @@ function activateCompleteBtn(completeBtn, userData, delay) {
   completeBtn.disabled = true;
   let countdown = delay;
   completeBtn.textContent = `Checking... ${countdown}s`;
+  completeBtn.classList.add("countdown");
 
   const timer = setInterval(() => {
     countdown--;
@@ -28,11 +29,15 @@ function activateCompleteBtn(completeBtn, userData, delay) {
       clearInterval(timer);
       if (!userData.completedTasks?.[completeBtn.dataset.taskId]) completeBtn.disabled = false;
       completeBtn.textContent = "Mark as Complete";
+      completeBtn.classList.remove("countdown");
     }
   }, 1000);
 }
 
-async function handleCompleteClick(completeBtn, userRef, taskId, reward, card) {
+async function handleCompleteClick(completeBtn, userRef, taskId, reward, card, userData) {
+  // if already completed, do nothing
+  if (userData.completedTasks?.[taskId]) return;
+
   try {
     completeBtn.disabled = true;
     await updateDoc(userRef, {
@@ -40,7 +45,7 @@ async function handleCompleteClick(completeBtn, userRef, taskId, reward, card) {
       [`completedTasks.${taskId}`]: true
     });
     completeBtn.textContent = "Completed ✅";
-    card.classList.add("task-completed"); // optional styling, doesn't disable main button
+    card.classList.add("task-completed"); // styling only
   } catch (err) {
     console.error("Error completing task:", err);
     completeBtn.disabled = false;
@@ -70,8 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const taskId = card.dataset.taskId;
       const reward = Number(card.dataset.reward);
 
+      const isCompleted = userData.completedTasks?.[taskId] || false;
+
       // If task already completed
-      if (userData.completedTasks?.[taskId]) {
+      if (isCompleted) {
         completeBtn.textContent = "Completed ✅";
         completeBtn.disabled = true;
         card.classList.add("task-completed");
@@ -81,22 +88,20 @@ document.addEventListener("DOMContentLoaded", () => {
       if (card.classList.contains("video-task")) {
         const watchBtn = card.querySelector(".watch-btn");
         const videoLink = card.dataset.videoLink;
-        let videoWatched = false;
+        let videoWatched = isCompleted; // already completed means treated as watched
 
         watchBtn.addEventListener("click", () => {
           window.open(videoLink, "_blank");
 
-          // Only activate countdown if task not already completed
-          if (!userData.completedTasks?.[taskId]) {
-            videoWatched = true;
-            activateCompleteBtn(completeBtn, userData, 60);
-          }
+          if (isCompleted) return; // do not activate countdown if completed
+
+          videoWatched = true;
+          activateCompleteBtn(completeBtn, userData, 60);
         });
 
         completeBtn.addEventListener("click", () => {
-          if (!videoWatched && !userData.completedTasks?.[taskId]) 
-            return alert("Please watch the video first!");
-          handleCompleteClick(completeBtn, userRef, taskId, reward, card);
+          if (!videoWatched && !isCompleted) return alert("Please watch the video first!");
+          handleCompleteClick(completeBtn, userRef, taskId, reward, card, userData);
         });
       }
 
@@ -108,12 +113,11 @@ document.addEventListener("DOMContentLoaded", () => {
         joinBtn.addEventListener("click", () => {
           window.open(socialLink, "_blank");
 
-          if (!userData.completedTasks?.[taskId]) {
-            activateCompleteBtn(completeBtn, userData, 10);
-          }
+          if (isCompleted) return; // prevent countdown if already completed
+          activateCompleteBtn(completeBtn, userData, 10);
         });
 
-        completeBtn.addEventListener("click", () => handleCompleteClick(completeBtn, userRef, taskId, reward, card));
+        completeBtn.addEventListener("click", () => handleCompleteClick(completeBtn, userRef, taskId, reward, card, userData));
       }
 
       // ---------- Other Task ----------
@@ -124,12 +128,11 @@ document.addEventListener("DOMContentLoaded", () => {
         startBtn.addEventListener("click", () => {
           window.open(taskLink, "_blank");
 
-          if (!userData.completedTasks?.[taskId]) {
-            activateCompleteBtn(completeBtn, userData, 30);
-          }
+          if (isCompleted) return; // prevent countdown if already completed
+          activateCompleteBtn(completeBtn, userData, 30);
         });
 
-        completeBtn.addEventListener("click", () => handleCompleteClick(completeBtn, userRef, taskId, reward, card));
+        completeBtn.addEventListener("click", () => handleCompleteClick(completeBtn, userRef, taskId, reward, card, userData));
       }
     });
   });
