@@ -34,8 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Reference to user doc
     const userRef = doc(db, "users", user.uid);
+
+    // Fetch user once
     const userSnap = await getDoc(userRef);
     if (!userSnap.exists()) return;
 
@@ -58,27 +59,27 @@ document.addEventListener("DOMContentLoaded", () => {
       if (userData.completedTasks?.[taskId]) {
         btn.textContent = "Completed ✅";
         btn.disabled = true;
+        card.classList.add("task-completed");
         return;
       }
 
       btn.addEventListener("click", async () => {
         try {
-          // Disable immediately
+          // Prevent double clicks
           btn.disabled = true;
           btn.textContent = "Processing... ⏳";
 
-          // Increment balance safely & mark task completed
+          // Increment balance & mark task complete safely
           await updateDoc(userRef, {
             balance: increment(reward),
             [`completedTasks.${taskId}`]: true
           });
 
-          // Update UI
+          // Update task UI
           btn.textContent = "Completed ✅";
+          card.classList.add("task-completed");
 
-          // Optional: subtle animation instead of alert
-          card.classList.add("task-completed"); // you can style .task-completed in CSS
-
+          // Dashboard will update automatically if it uses onSnapshot
         } catch (err) {
           console.error("Error completing task:", err);
           btn.disabled = false;
