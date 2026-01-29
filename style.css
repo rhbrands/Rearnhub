@@ -261,8 +261,30 @@ form input {
   transition: all 0.3s ease;
 }
 
+.task-completed {
+  background-color: #e0ffe0;
+  border: 2px solid #4caf50;
+  opacity: 0;
+  transform: scale(0.95);
+  animation: completeTask 0.3s forwards;
+}
+
+@keyframes completeTask {
+  to {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+
 .task-completed button {
   background-color: #4caf50; /* green button */
   color: white;
   cursor: default;
+}
+.task-completed button {
+  background-color: #4caf50;
+  color: white;
+  cursor: default;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
