@@ -8,11 +8,7 @@ import {
 import {
   getFirestore,
   doc,
-  setDoc,
-  collection,
-  query,
-  where,
-  getDocs
+  setDoc
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // Firebase config
@@ -30,7 +26,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Helper
+// ----------------------
+// Helper function
+// ----------------------
 function attachFormHandler(formId, callback) {
   const form = document.getElementById(formId);
   if (!form) return;
@@ -46,33 +44,22 @@ function attachFormHandler(formId, callback) {
 // ----------------------
 attachFormHandler("registerForm", async (form) => {
   const messageBox = document.getElementById("register-message");
-  messageBox.textContent = "";
-  messageBox.className = "form-message";
 
   const fullName = form.querySelector("#fullName").value.trim();
   const whatsapp = form.querySelector("#whatsapp").value.trim();
   const email = form.querySelector("#email").value.trim();
   const password = form.querySelector("#password").value;
 
+  messageBox.textContent = "";
+  messageBox.className = "form-message";
+
   if (!fullName || !whatsapp || !email || !password) {
     messageBox.textContent = "Please fill in all required fields.";
-    messageBox.className = "form-message error";
+    messageBox.classList.add("error");
     return;
   }
 
   try {
-    const phoneQuery = query(
-      collection(db, "users"),
-      where("whatsapp", "==", whatsapp)
-    );
-    const phoneSnapshot = await getDocs(phoneQuery);
-
-    if (!phoneSnapshot.empty) {
-      messageBox.textContent = "Phone number already in use by another user";
-      messageBox.className = "form-message error";
-      return;
-    }
-
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
@@ -80,30 +67,20 @@ attachFormHandler("registerForm", async (form) => {
       fullName,
       whatsapp,
       email,
-      balance: 5000,
+      balance: 5000, // registration bonus
       createdAt: new Date()
     });
 
-    messageBox.textContent = "Account created successfully!";
-    messageBox.className = "form-message success";
+    messageBox.textContent = "Account created successfully! Redirecting...";
+    messageBox.classList.add("success");
 
     setTimeout(() => {
       window.location.href = "dashboard.html";
-    }, 1000);
+    }, 1500);
 
   } catch (error) {
-    let friendlyMessage = "Registration failed. Please try again.";
-
-    if (error.code === "auth/email-already-in-use") {
-      friendlyMessage = "Email already in use by another user";
-    } else if (error.code === "auth/invalid-email") {
-      friendlyMessage = "Invalid email address";
-    } else if (error.code === "auth/weak-password") {
-      friendlyMessage = "Password should be at least 6 characters";
-    }
-
-    messageBox.textContent = friendlyMessage;
-    messageBox.className = "form-message error";
+    messageBox.textContent = error.message;
+    messageBox.classList.add("error");
   }
 });
 
@@ -112,15 +89,16 @@ attachFormHandler("registerForm", async (form) => {
 // ----------------------
 attachFormHandler("loginForm", async (form) => {
   const messageBox = document.getElementById("login-message");
-  messageBox.textContent = "";
-  messageBox.className = "form-message";
 
   const email = form.querySelector("#email").value.trim();
   const password = form.querySelector("#password").value;
 
+  messageBox.textContent = "";
+  messageBox.className = "form-message";
+
   if (!email || !password) {
     messageBox.textContent = "Please enter both email and password.";
-    messageBox.className = "form-message error";
+    messageBox.classList.add("error");
     return;
   }
 
@@ -128,24 +106,27 @@ attachFormHandler("loginForm", async (form) => {
     await signInWithEmailAndPassword(auth, email, password);
 
     messageBox.textContent = "Login successful! Redirecting...";
-    messageBox.className = "form-message success";
+    messageBox.classList.add("success");
 
     setTimeout(() => {
       window.location.href = "dashboard.html";
     }, 1500);
 
-  } catch (error) {
-    let friendlyMessage = "Login failed. Please try again.";
+ } catch (error) {
+  const messageBox = document.getElementById("login-message");
 
-    if (
-      error.code === "auth/invalid-credential" ||
-      error.code === "auth/wrong-password" ||
-      error.code === "auth/user-not-found"
-    ) {
-      friendlyMessage = "Incorrect email or password";
-    }
+  let friendlyMessage = "Login failed. Please try again.";
 
-    messageBox.textContent = friendlyMessage;
-    messageBox.className = "form-message error";
+  if (
+    error.code === "auth/invalid-credential" ||
+    error.code === "auth/wrong-password" ||
+    error.code === "auth/user-not-found"
+  ) {
+    friendlyMessage = "Incorrect email or password";
   }
+
+  messageBox.textContent = friendlyMessage;
+  messageBox.className = "form-message error";
+}
+
 });
