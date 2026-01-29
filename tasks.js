@@ -1,6 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { 
+  getFirestore, doc, getDoc, updateDoc 
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // ----------------------
 // Firebase config
@@ -15,7 +17,7 @@ const firebaseConfig = {
 };
 
 // ----------------------
-// Initialize Firebase
+// Initialize Firebase (ONCE)
 // ----------------------
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -25,84 +27,61 @@ document.addEventListener("DOMContentLoaded", () => {
   const userFullNameSpan = document.getElementById("userFullName");
   const backDashboardBtn = document.getElementById("backDashboardBtn");
 
-  if (!userFullNameSpan) {
-    console.error("ERROR: No element found with id 'userFullName'. Check your tasks.html header!");
-    return;
-  }
-
-  // ----------------------
-  // Watch auth state
-  // ----------------------
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      console.log("User not logged in. Redirecting to login page.");
       window.location.href = "login.html";
       return;
     }
 
-    console.log("Logged in user UID:", user.uid, "Email:", user.email);
+    // ----------------------
+    // Fetch user
+    // ----------------------
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
 
-    let userData = null;
+    if (!userSnap.exists()) {
+      console.error("User document not found");
+      return;
+    }
 
-    try {
-      // 1️⃣ Try fetching by UID first
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+    const userData = userSnap.data();
 
-      console.log("Checking UID document:", user.uid);
-      console.log("userSnap.exists():", userSnap.exists());
+    // ----------------------
+    // Header name
+    // ----------------------
+    userFullNameSpan.textContent =
+      userData.fullName || user.email;
 
-      if (userSnap.exists()) {
-        userData = userSnap.data();
-        console.log("Fetched by UID:", userData);
-      } else {
-        // 2️⃣ Fallback: query by email
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("email", "==", user.email));
-        const querySnapshot = await getDocs(q);
+    // ----------------------
+    // Task buttons logic
+    // ----------------------
+    const taskButtons = document.querySelectorAll(".task-card button");
 
-        console.log("Fallback email query results:", querySnapshot.size);
+    taskButtons.forEach((btn, index) => {
+      btn.addEventListener("click", async () => {
+        const taskId = `task${index + 1}`;
+        const reward = 200;
 
-        if (!querySnapshot.empty) {
-          userData = querySnapshot.docs[0].data();
-          console.log("Fetched by email:", userData);
+        // Prevent double reward
+        if (userData.completedTasks?.[taskId]) {
+          alert("Task already completed ❌");
+          return;
         }
-      }
 
-      // 3️⃣ Display fullName if available, else email
-      if (userData && userData.fullName) {
-        userFullNameSpan.textContent = userData.fullName;
-      } else {
-        console.warn("Full name not found in Firestore. Falling back to email.");
-        userFullNameSpan.textContent = user.email;
-      }
+        await updateDoc(userRef, {
+          balance: (userData.balance || 0) + reward,
+          [`completedTasks.${taskId}`]: true
+        });
 
-     // ----------------------
-// Account Balance Section
-// ----------------------
-const balanceAmount = document.querySelector(".balance-amount");
-if (balanceAmount) {
-    if (userData.balance === undefined || userData.balance === null) {
-        // Initialize new user's balance to 5000
-        await setDoc(doc(db, "users", user.uid), { balance: 5000 }, { merge: true });
-        balanceAmount.textContent = "#5000";
-        console.log("New user balance initialized to 5000 on Tasks page");
-    } else {
-        balanceAmount.textContent = `#${userData.balance}`;
-    }
-}
-
-
-
-
-    } catch (err) {
-      console.error("Error fetching user data:", err);
-      userFullNameSpan.textContent = user.email;
-    }
+        alert("Task completed! Balance updated ✅");
+        btn.disabled = true;
+        btn.textContent = "Completed";
+      });
+    });
   });
 
   // ----------------------
-  // Back to Dashboard button
+  // Back to dashboard
   // ----------------------
   if (backDashboardBtn) {
     backDashboardBtn.addEventListener("click", () => {
@@ -110,61 +89,3 @@ if (balanceAmount) {
     });
   }
 });
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { 
-  getFirestore, doc, getDoc, updateDoc 
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-
-// Firebase config (same as dashboard)
-const firebaseConfig = {
-  apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
-  authDomain: "rearnhub.firebaseapp.com",
-  projectId: "rearnhub",
-  storageBucket: "rearnhub.firebasestorage.app",
-  messagingSenderId: "461077159495",
-  appId: "1:461077159495:web:595412074b4c28de17db62"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  const taskButtons = document.querySelectorAll(".task-card button");
-
-  taskButtons.forEach((btn, index) => {
-    btn.addEventListener("click", async () => {
-      const taskId = `task${index + 1}`;
-      const reward = 200; // reward per task
-
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-
-      if (!userSnap.exists()) return;
-
-      const userData = userSnap.data();
-
-      // Prevent double reward
-      if (userData.completedTasks?.[taskId]) {
-        alert("Task already completed ❌");
-        return;
-      }
-
-      // Update balance + mark task complete
-      await updateDoc(userRef, {
-        balance: (userData.balance || 0) + reward,
-        [`completedTasks.${taskId}`]: true
-      });
-
-      alert("Task completed! Balance updated ✅");
-    });
-  });
-});
-
