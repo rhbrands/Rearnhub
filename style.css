@@ -86,6 +86,21 @@ form input {
   width: 100%;
 }
 
+.form-message {
+  margin-bottom: 12px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.form-message.success {
+  color: #22c55e;
+}
+
+.form-message.error {
+  color: #ef4444;
+}
+
+
 /* Dashboard Header */
 .dashboard-header {
   display: flex;
