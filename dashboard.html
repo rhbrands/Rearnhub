@@ -19,7 +19,6 @@
   <main class="dashboard-main">
     <p>Welcome to your dashboard!</p>
     <p>Here you will see your tasks and rewards.</p>
-    <button id="logoutBtn" class="btn btn-outline">Logout</button>
 
     <!-- Account Balance Section -->
 <section class="dashboard-section balance-section">
@@ -27,6 +26,19 @@
   <p class="balance-amount">#</p>
 </section>
 
+<!-- Refer Section -->
+<section class="dashboard-section refer-section">
+  <h2>Refer & Earn</h2>
+  <p>Your referral link:</p>
+  <input type="text" id="referLink" readonly />
+
+  <p>Total Referrals: <span id="referCount">0</span></p>
+  <p class="refer-instructions">
+    Earn $1 for every person who signs up using your referral link!
+  </p>
+</section>
+
+    <button id="logoutBtn" class="btn btn-outline">Logout</button>
   </main>
 
   <script type="module" src="dashboard.js"></script>
