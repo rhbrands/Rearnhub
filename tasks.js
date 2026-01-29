@@ -78,6 +78,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const completeBtn = card.querySelector(".complete-btn");
       const taskId = card.dataset.taskId;
       const reward = Number(card.dataset.reward);
+
+// Dynamically update the reward text
+const rewardTextEl = card.querySelector(".reward-text");
+if (rewardTextEl) {
+  rewardTextEl.textContent = `Complete this task and earn ₦${reward}`;
+}
+
       const isCompleted = userData.completedTasks?.[taskId] || false;
 
       if (isCompleted) {
