@@ -70,9 +70,17 @@ if (userData && userData.fullName) {
 // ----------------------
 const balanceAmount = document.querySelector(".balance-amount");
 if (balanceAmount) {
-    // userData.balance exists from Firestore
-    balanceAmount.textContent = userData && userData.balance ? `#${userData.balance}` : "#0";
+    if (userData.balance === undefined || userData.balance === null) {
+        // Initialize new user's balance to 5000
+        await setDoc(doc(db, "users", user.uid), { balance: 5000 }, { merge: true });
+        balanceAmount.textContent = "#5000"; // merge: true keeps existing fields safe, only adds/updates balance
+
+        console.log("New user balance initialized to 5000 on Dashboard page");
+    } else {
+        balanceAmount.textContent = `#${userData.balance}`;
+    }
 }
+
 
 // ----------------------
 // Refer Section
