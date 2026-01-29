@@ -12,6 +12,7 @@ const firebaseConfig = {
   appId: "1:461077159495:web:595412074b4c28de17db62"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -29,13 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       let userData = null;
 
-      // Try fetching by UID first
+      // Fetch user by UID first
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
         userData = userSnap.data();
-        console.log("Fetched by UID:", userData);
+        console.log("Tasks page fetched by UID:", userData);
       } else {
         // Fallback: query by email
         const usersRef = collection(db, "users");
@@ -44,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!querySnapshot.empty) {
           userData = querySnapshot.docs[0].data();
-          console.log("Fetched by email:", userData);
+          console.log("Tasks page fetched by email:", userData);
         }
       }
 
@@ -61,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Back button
   if (backDashboardBtn) {
     backDashboardBtn.addEventListener("click", () => {
       window.location.href = "dashboard.html";
