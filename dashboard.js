@@ -70,7 +70,8 @@ if (userData && userData.fullName) {
 // ----------------------
 const balanceAmount = document.querySelector(".balance-amount");
 if (balanceAmount) {
-    balanceAmount.textContent = "#"; // placeholder
+    // userData.balance exists from Firestore
+    balanceAmount.textContent = userData && userData.balance ? `#${userData.balance}` : "#0";
 }
 
 // ----------------------
@@ -116,10 +117,3 @@ if (tasksBtn) {
     }
   });
 });
-
-// Account Balance Section
-const balanceAmount = document.querySelector(".balance-amount");
-if (balanceAmount) {
-    // userData.balance exists from Firestore
-    balanceAmount.textContent = userData && userData.balance ? `#${userData.balance}` : "#0";
-}
