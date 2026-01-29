@@ -79,9 +79,20 @@ attachFormHandler("registerForm", async (form) => {
     }, 1500);
 
   } catch (error) {
-    messageBox.textContent = error.message;
-    messageBox.classList.add("error");
+  let friendlyMessage = "Registration failed. Please try again.";
+
+  if (error.code === "auth/email-already-in-use") {
+    friendlyMessage = "Email already in use, try logging in";
+  } else if (error.code === "auth/invalid-email") {
+    friendlyMessage = "Invalid email address";
+  } else if (error.code === "auth/weak-password") {
+    friendlyMessage = "Password should be at least 6 characters";
   }
+
+  messageBox.textContent = friendlyMessage;
+  messageBox.classList.add("error");
+}
+
 });
 
 // ----------------------
