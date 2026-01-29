@@ -1,10 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { 
-  getFirestore, doc, getDoc, updateDoc 
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
+// ----------------------
 // Firebase config
+// ----------------------
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
   authDomain: "rearnhub.firebaseapp.com",
@@ -14,7 +14,9 @@ const firebaseConfig = {
   appId: "1:461077159495:web:595412074b4c28de17db62"
 };
 
-// Initialize Firebase ONCE
+// ----------------------
+// Initialize Firebase
+// ----------------------
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -23,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const userFullNameSpan = document.getElementById("userFullName");
   const backDashboardBtn = document.getElementById("backDashboardBtn");
 
+  // ----------------------
+  // Auth check
+  // ----------------------
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "login.html";
@@ -39,7 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show full name
     userFullNameSpan.textContent = userData.fullName || user.email;
 
-    // Handle task buttons
+    // ----------------------
+    // Task buttons
+    // ----------------------
     const taskCards = document.querySelectorAll(".task-card");
 
     taskCards.forEach(card => {
@@ -55,20 +62,35 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       btn.addEventListener("click", async () => {
-        await updateDoc(userRef, {
-          balance: (userData.balance || 0) + reward,
-          [`completedTasks.${taskId}`]: true
-        });
+        try {
+          // Disable immediately to prevent double clicks
+          btn.disabled = true;
+          btn.textContent = "Processing... ⏳";
 
-        btn.textContent = "Completed ✅";
-        btn.disabled = true;
+          // Safe increment + mark task completed
+          await updateDoc(userRef, {
+            balance: increment(reward),
+            [`completedTasks.${taskId}`]: true
+          });
 
-        alert(`Task completed! ₦${reward} added to your balance 🎉`);
+          // Update UI after success
+          btn.textContent = "Completed ✅";
+
+          // Show alert after successful update ✅
+          alert(`Task completed! ₦${reward} added to your balance 🎉`);
+        } catch (err) {
+          console.error("Error updating task:", err);
+          btn.disabled = false;
+          btn.textContent = "Do Task";
+          alert("Failed to update task. Please try again!");
+        }
       });
     });
   });
 
+  // ----------------------
   // Back button
+  // ----------------------
   if (backDashboardBtn) {
     backDashboardBtn.addEventListener("click", () => {
       window.location.href = "dashboard.html";
