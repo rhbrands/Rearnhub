@@ -103,10 +103,10 @@ form input {
 }
 
 .dashboard-header .user-info {
-  text-align: left;
+  text-align: right;
 }
 
 .dashboard-header .site-name {
-  text-align: right;
+  text-align: left;
 }
 
