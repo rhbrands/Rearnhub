@@ -27,6 +27,48 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ----------------------
+// Password Strength Hint
+// ----------------------
+const passwordInput = document.getElementById("password");
+const passwordHint = document.getElementById("password-hint");
+
+if (passwordInput && passwordHint) {
+  passwordInput.addEventListener("input", () => {
+    const val = passwordInput.value;
+
+    let strength = 0;
+
+    if (val.length >= 6) strength++;
+    if (/[A-Z]/.test(val)) strength++;
+    if (/[0-9]/.test(val)) strength++;
+    if (/[\W_]/.test(val)) strength++; // special characters
+
+    let message = "";
+    let color = "#ef4444"; // red by default
+
+    switch (strength) {
+      case 0:
+      case 1:
+        message = "Weak password";
+        color = "#ef4444"; // red
+        break;
+      case 2:
+      case 3:
+        message = "Medium strength";
+        color = "#facc15"; // yellow
+        break;
+      case 4:
+        message = "Strong password";
+        color = "#22c55e"; // green
+        break;
+    }
+
+    passwordHint.textContent = message;
+    passwordHint.style.color = color;
+  });
+}
+
+// ----------------------
 // Helper function
 // ----------------------
 function attachFormHandler(formId, callback) {
