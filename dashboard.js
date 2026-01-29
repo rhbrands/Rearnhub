@@ -88,6 +88,16 @@ if (referCountSpan) {
     referCountSpan.textContent = referralCount;
 }
 
+      // ----------------------
+// Tasks Section
+// ----------------------
+const tasksBtn = document.getElementById("tasksBtn");
+if (tasksBtn) {
+  tasksBtn.addEventListener("click", () => {
+    window.location.href = "tasks.html"; // link to your tasks page
+  });
+}
+
     } catch (error) {
       console.error("Error fetching user data:", error);
       userFullNameSpan.textContent = user.email;
