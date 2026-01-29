@@ -329,3 +329,70 @@ form input {
   animation: taskPop 0.4s ease forwards;
 }
 
+/* ---------- Task Completed Styling ---------- */
+.task-completed {
+  background-color: #1a1a1a; /* keep dark background */
+  border: 2px solid #4caf50; /* green border for completed */
+  transition: all 0.3s ease;
+}
+
+.task-completed h3,
+.task-completed p {
+  color: #00ff9c; /* keep text readable */
+}
+
+/* Complete button when completed */
+.complete-btn:disabled {
+  background-color: #4caf50; /* green */
+  color: #fff;
+  cursor: default;
+  opacity: 0.9;
+}
+
+/* Countdown style for Mark as Complete */
+.complete-btn.countdown {
+  background-color: #00ff9c; /* bright */
+  color: #000;
+  font-weight: bold;
+}
+
+/* Ensure main buttons remain clickable */
+.watch-btn,
+.join-btn,
+.start-btn {
+  background-color: #00ff9c;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.watch-btn:hover,
+.join-btn:hover,
+.start-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Add spacing between two buttons in task card */
+.task-card .btn {
+  margin: 5px;
+}
+
+/* Optional: small icon on countdown for clarity */
+.complete-btn.countdown::after {
+  content: " ⏳";
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .task-card {
+    flex-direction: column;
+  }
+
+  .task-card .btn {
+    width: 80%;
+    margin: 8px auto;
+  }
+}
