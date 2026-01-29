@@ -75,9 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Update UI after success
           btn.textContent = "Completed ✅";
+          btn.disabled = true;
 
-          // Show alert after successful update ✅
-          alert(`Task completed! ₦${reward} added to your balance 🎉`);
         } catch (err) {
           console.error("Error updating task:", err);
           btn.disabled = false;
