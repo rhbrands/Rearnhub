@@ -1,10 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-// ----------------------
 // Firebase config
-// ----------------------
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
   authDomain: "rearnhub.firebaseapp.com",
@@ -14,9 +12,7 @@ const firebaseConfig = {
   appId: "1:461077159495:web:595412074b4c28de17db62"
 };
 
-// ----------------------
 // Initialize Firebase
-// ----------------------
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -24,32 +20,7 @@ const db = getFirestore(app);
 document.addEventListener("DOMContentLoaded", () => {
   const userFullNameSpan = document.getElementById("userFullName");
   const backDashboardBtn = document.getElementById("backDashboardBtn");
-  const balanceAmount = document.querySelector(".balance-amount"); // optional, for live balance
 
-  // ----------------------
-  // Toast helper
-  // ----------------------
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.textContent = message;
-    toast.style.position = "fixed";
-    toast.style.top = "20px";
-    toast.style.left = "50%";
-    toast.style.transform = "translateX(-50%)";
-    toast.style.background = "#00ff9c";
-    toast.style.color = "#000";
-    toast.style.padding = "10px 20px";
-    toast.style.borderRadius = "5px";
-    toast.style.fontWeight = "bold";
-    toast.style.zIndex = "9999";
-    toast.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-  };
-
-  // ----------------------
-  // Auth check
-  // ----------------------
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "login.html";
@@ -57,77 +28,98 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) return;
 
-    // ----------------------
-    // Real-time snapshot for live balance updates
-    // ----------------------
-    onSnapshot(userRef, (docSnap) => {
-      if (!docSnap.exists()) return;
+    const userData = userSnap.data();
+    userFullNameSpan.textContent = userData.fullName || user.email;
 
-      const userData = docSnap.data();
+    const taskCards = document.querySelectorAll(".task-card");
 
-      // Show full name
-      userFullNameSpan.textContent = userData.fullName || user.email;
+    taskCards.forEach(card => {
+      const taskId = card.dataset.taskId;
+      const reward = Number(card.dataset.reward);
 
-      // Update balance dynamically
-      if (balanceAmount) {
-        balanceAmount.textContent = `#${userData.balance || 0}`;
-      }
+      // For video tasks, assume class "video-task" is added
+      if (card.classList.contains("video-task")) {
+        const watchBtn = card.querySelector(".watch-btn");
+        const completeBtn = card.querySelector(".complete-btn");
 
-      // Update task cards for already completed tasks
-      const taskCards = document.querySelectorAll(".task-card");
-      taskCards.forEach(card => {
+        // Initially, mark as complete button is disabled
+        completeBtn.disabled = true;
+
+        // Disable if task already completed
+        if (userData.completedTasks?.[taskId]) {
+          completeBtn.textContent = "Completed ✅";
+          completeBtn.disabled = true;
+          card.classList.add("task-completed");
+        }
+
+        // Watch Video button clicked
+        watchBtn.addEventListener("click", () => {
+          // Open video or play modal
+          alert("Video opened! Watch it for at least 1 minute.");
+
+          // Activate "Mark as Complete" button after 1 min (60000ms)
+          setTimeout(() => {
+            if (!userData.completedTasks?.[taskId]) {
+              completeBtn.disabled = false;
+            }
+          }, 60000);
+        });
+
+        // Mark as Complete button clicked
+        completeBtn.addEventListener("click", async () => {
+          try {
+            completeBtn.disabled = true;
+            completeBtn.textContent = "Processing... ⏳";
+
+            await updateDoc(userRef, {
+              balance: increment(reward),
+              [`completedTasks.${taskId}`]: true
+            });
+
+            completeBtn.textContent = "Completed ✅";
+            card.classList.add("task-completed");
+
+          } catch (err) {
+            console.error("Error completing task:", err);
+            completeBtn.disabled = false;
+            completeBtn.textContent = "Mark as Complete";
+            alert("Failed to complete task. Try again.");
+          }
+        });
+
+      } else {
+        // Non-video tasks (old behavior)
         const btn = card.querySelector("button");
-        const taskId = card.dataset.taskId;
-
         if (userData.completedTasks?.[taskId]) {
           btn.textContent = "Completed ✅";
           btn.disabled = true;
           card.classList.add("task-completed");
-        }
-      });
-    });
-
-    // ----------------------
-    // Task buttons click
-    // ----------------------
-    const taskCards = document.querySelectorAll(".task-card");
-    taskCards.forEach(card => {
-      const btn = card.querySelector("button");
-      const taskId = card.dataset.taskId;
-      const reward = Number(card.dataset.reward);
-
-      btn.addEventListener("click", async () => {
-        try {
-          btn.disabled = true;
-          btn.textContent = "Processing... ⏳";
-
-          // Safe increment and mark task complete
-          await updateDoc(userRef, {
-            balance: increment(reward),
-            [`completedTasks.${taskId}`]: true
+        } else {
+          btn.addEventListener("click", async () => {
+            try {
+              btn.disabled = true;
+              btn.textContent = "Processing... ⏳";
+              await updateDoc(userRef, {
+                balance: increment(reward),
+                [`completedTasks.${taskId}`]: true
+              });
+              btn.textContent = "Completed ✅";
+              card.classList.add("task-completed");
+            } catch (err) {
+              console.error("Error completing task:", err);
+              btn.disabled = false;
+              btn.textContent = "Do Task";
+              alert("Failed to complete task. Try again.");
+            }
           });
-
-          // Update UI instantly
-          btn.textContent = "Completed ✅";
-          card.classList.add("task-completed");
-
-          // Show toast
-          showToast(`Task completed! ₦${reward} added 🎉`);
-
-        } catch (err) {
-          console.error("Error completing task:", err);
-          btn.disabled = false;
-          btn.textContent = "Do Task";
-          showToast("Failed to complete task. Try again.");
         }
-      });
+      }
     });
   });
 
-  // ----------------------
-  // Back button
-  // ----------------------
   if (backDashboardBtn) {
     backDashboardBtn.addEventListener("click", () => {
       window.location.href = "dashboard.html";
