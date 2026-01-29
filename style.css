@@ -279,7 +279,7 @@ form input {
 
 /* Completed task highlight - card stays visible */
 .task-completed {
-  background-color: #1a1a1a; /* keep dark background */
+  background-color: #1a1a1a;
   border: 2px solid #4caf50;
   color: #00ff9c;
   transform: scale(1.05);
