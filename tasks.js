@@ -2,7 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebas
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
+// ----------------------
 // Firebase config
+// ----------------------
 const firebaseConfig = {
   apiKey: "AIzaSyDUuzw189X97PKegWApVMTUEY5AJC6F5r8",
   authDomain: "rearnhub.firebaseapp.com",
@@ -12,7 +14,9 @@ const firebaseConfig = {
   appId: "1:461077159495:web:595412074b4c28de17db62"
 };
 
+// ----------------------
 // Initialize Firebase
+// ----------------------
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -37,51 +41,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskCards = document.querySelectorAll(".task-card");
 
     taskCards.forEach(card => {
+      const completeBtn = card.querySelector(".complete-btn");
       const taskId = card.dataset.taskId;
       const reward = Number(card.dataset.reward);
 
-      // For video tasks, assume class "video-task" is added
+      // If task already completed
+      if (userData.completedTasks?.[taskId]) {
+        completeBtn.textContent = "Completed ✅";
+        completeBtn.disabled = true;
+        card.classList.add("task-completed");
+      }
+
+      // ---------- Video Task ----------
       if (card.classList.contains("video-task")) {
         const watchBtn = card.querySelector(".watch-btn");
-        const completeBtn = card.querySelector(".complete-btn");
+        const videoLink = card.dataset.videoLink;
 
-        // Initially, mark as complete button is disabled
-        completeBtn.disabled = true;
+        let videoWatched = false;
 
-        // Disable if task already completed
-        if (userData.completedTasks?.[taskId]) {
-          completeBtn.textContent = "Completed ✅";
-          completeBtn.disabled = true;
-          card.classList.add("task-completed");
-        }
-
-        // Watch Video button clicked
         watchBtn.addEventListener("click", () => {
-          // Open video or play modal
-          alert("Video opened! Watch it for at least 1 minute.");
+          window.open(videoLink, "_blank");
+          videoWatched = true;
 
-          // Activate "Mark as Complete" button after 1 min (60000ms)
+          // Enable completeBtn after 1 min
           setTimeout(() => {
-            if (!userData.completedTasks?.[taskId]) {
-              completeBtn.disabled = false;
-            }
+            if (!userData.completedTasks?.[taskId]) completeBtn.disabled = false;
           }, 60000);
         });
 
-        // Mark as Complete button clicked
         completeBtn.addEventListener("click", async () => {
+          if (!videoWatched) return alert("Please watch the video first!");
           try {
             completeBtn.disabled = true;
-            completeBtn.textContent = "Processing... ⏳";
-
             await updateDoc(userRef, {
               balance: increment(reward),
               [`completedTasks.${taskId}`]: true
             });
-
             completeBtn.textContent = "Completed ✅";
             card.classList.add("task-completed");
-
           } catch (err) {
             console.error("Error completing task:", err);
             completeBtn.disabled = false;
@@ -89,37 +86,96 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Failed to complete task. Try again.");
           }
         });
+      }
 
-      } else {
-        // Non-video tasks (old behavior)
-        const btn = card.querySelector("button");
-        if (userData.completedTasks?.[taskId]) {
-          btn.textContent = "Completed ✅";
-          btn.disabled = true;
-          card.classList.add("task-completed");
-        } else {
-          btn.addEventListener("click", async () => {
-            try {
-              btn.disabled = true;
-              btn.textContent = "Processing... ⏳";
-              await updateDoc(userRef, {
-                balance: increment(reward),
-                [`completedTasks.${taskId}`]: true
-              });
-              btn.textContent = "Completed ✅";
-              card.classList.add("task-completed");
-            } catch (err) {
-              console.error("Error completing task:", err);
-              btn.disabled = false;
-              btn.textContent = "Do Task";
-              alert("Failed to complete task. Try again.");
+      // ---------- Social Task ----------
+      if (card.classList.contains("social-task")) {
+        const joinBtn = card.querySelector(".join-btn");
+        const socialLink = card.dataset.socialLink;
+
+        joinBtn.addEventListener("click", () => {
+          window.open(socialLink, "_blank");
+          // Activate completeBtn after 10s countdown
+          let countdown = 10;
+          completeBtn.disabled = true;
+          completeBtn.textContent = `Checking... ${countdown}s`;
+
+          const timer = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+              completeBtn.textContent = `Checking... ${countdown}s`;
+            } else {
+              clearInterval(timer);
+              if (!userData.completedTasks?.[taskId]) completeBtn.disabled = false;
+              completeBtn.textContent = "Mark as Complete";
             }
-          });
-        }
+          }, 1000);
+        });
+
+        completeBtn.addEventListener("click", async () => {
+          try {
+            completeBtn.disabled = true;
+            await updateDoc(userRef, {
+              balance: increment(reward),
+              [`completedTasks.${taskId}`]: true
+            });
+            completeBtn.textContent = "Completed ✅";
+            card.classList.add("task-completed");
+          } catch (err) {
+            console.error("Error completing task:", err);
+            completeBtn.disabled = false;
+            completeBtn.textContent = "Mark as Complete";
+            alert("Failed to complete task. Try again.");
+          }
+        });
+      }
+
+      // ---------- Other Task ----------
+      if (card.classList.contains("other-task")) {
+        const startBtn = card.querySelector(".start-btn");
+        const taskLink = card.dataset.taskLink;
+
+        startBtn.addEventListener("click", () => {
+          window.open(taskLink, "_blank");
+
+          // Enable completeBtn after 30s countdown
+          let countdown = 30;
+          completeBtn.disabled = true;
+          completeBtn.textContent = `Checking... ${countdown}s`;
+
+          const timer = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+              completeBtn.textContent = `Checking... ${countdown}s`;
+            } else {
+              clearInterval(timer);
+              if (!userData.completedTasks?.[taskId]) completeBtn.disabled = false;
+              completeBtn.textContent = "Mark as Complete";
+            }
+          }, 1000);
+        });
+
+        completeBtn.addEventListener("click", async () => {
+          try {
+            completeBtn.disabled = true;
+            await updateDoc(userRef, {
+              balance: increment(reward),
+              [`completedTasks.${taskId}`]: true
+            });
+            completeBtn.textContent = "Completed ✅";
+            card.classList.add("task-completed");
+          } catch (err) {
+            console.error("Error completing task:", err);
+            completeBtn.disabled = false;
+            completeBtn.textContent = "Mark as Complete";
+            alert("Failed to complete task. Try again.");
+          }
+        });
       }
     });
   });
 
+  // Back to Dashboard button
   if (backDashboardBtn) {
     backDashboardBtn.addEventListener("click", () => {
       window.location.href = "dashboard.html";
