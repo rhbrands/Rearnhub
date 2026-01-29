@@ -83,10 +83,6 @@ input {
 }
 
 form input {
-  padding: 12px;
-  border-radius: 5px;
-  border: none;
-  font-size: 1rem;
   width: 100%;
 }
 
@@ -281,9 +277,9 @@ form input {
   transform: translateY(-1px);
 }
 
-/* Completed task highlight */
+/* Completed task highlight - card stays visible */
 .task-completed {
-  background-color: #1a1a1a;
+  background-color: #1a1a1a; /* keep dark background */
   border: 2px solid #4caf50;
   color: #00ff9c;
   transform: scale(1.05);
@@ -308,7 +304,7 @@ form input {
   color: #fff;
   cursor: default;
   opacity: 0.9;
-  pointer-events: auto; /* allow countdown timers if needed */
+  pointer-events: auto; /* allows main buttons to stay clickable */
 }
 
 /* Countdown style for Mark as Complete */
