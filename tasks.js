@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Fetch user
+    // Reference to user doc
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
     if (!userSnap.exists()) return;
@@ -63,25 +63,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
       btn.addEventListener("click", async () => {
         try {
-          // Disable immediately to prevent double clicks
+          // Disable immediately
           btn.disabled = true;
           btn.textContent = "Processing... ⏳";
 
-          // Safe increment + mark task completed
+          // Increment balance safely & mark task completed
           await updateDoc(userRef, {
             balance: increment(reward),
             [`completedTasks.${taskId}`]: true
           });
 
-          // Update UI after success
+          // Update UI
           btn.textContent = "Completed ✅";
-          btn.disabled = true;
+
+          // Optional: subtle animation instead of alert
+          card.classList.add("task-completed"); // you can style .task-completed in CSS
 
         } catch (err) {
-          console.error("Error updating task:", err);
+          console.error("Error completing task:", err);
           btn.disabled = false;
           btn.textContent = "Do Task";
-          alert("Failed to update task. Please try again!");
+          alert("Failed to complete task. Try again.");
         }
       });
     });
