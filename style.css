@@ -329,3 +329,38 @@ form input {
     margin: 8px auto;
   }
 }
+
+/* --- Filter Buttons Container --- */
+.task-filter {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+/* --- Filter Buttons --- */
+.filter-btn {
+  padding: 8px 16px;
+  background-color: #1a1a1a;
+  color: #00ff9c;
+  border: 2px solid #00ff9c;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background-color: #00ff9c;
+  color: #000;
+  transform: translateY(-1px);
+}
+
+/* --- Active Filter Button --- */
+.filter-btn.active {
+  background-color: #00ff9c;
+  color: #000;
+  border: 2px solid #00ff9c;
+  box-shadow: 0 0 10px #00ff9c, 0 0 20px #00ff9c;
+  transform: scale(1.05);
+}
