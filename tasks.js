@@ -21,15 +21,51 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Generic function to handle mark-as-complete after countdown
+function activateCompleteBtn(completeBtn, userData, userRef, taskId, reward, delay) {
+  completeBtn.disabled = true;
+  let countdown = delay;
+  completeBtn.textContent = `Checking... ${countdown}s`;
+
+  const timer = setInterval(() => {
+    countdown--;
+    if (countdown > 0) {
+      completeBtn.textContent = `Checking... ${countdown}s`;
+    } else {
+      clearInterval(timer);
+      if (!userData.completedTasks?.[taskId]) completeBtn.disabled = false;
+      completeBtn.textContent = "Mark as Complete";
+    }
+  }, 1000);
+}
+
+// Function to handle completion click
+async function handleCompleteClick(completeBtn, userRef, taskId, reward, card) {
+  try {
+    completeBtn.disabled = true;
+    await updateDoc(userRef, {
+      balance: increment(reward),
+      [`completedTasks.${taskId}`]: true
+    });
+    completeBtn.textContent = "Completed ✅";
+    card.classList.add("task-completed");
+  } catch (err) {
+    console.error("Error completing task:", err);
+    completeBtn.disabled = false;
+    completeBtn.textContent = "Mark as Complete";
+    alert("Failed to complete task. Try again.");
+  }
+}
+
+// ----------------------
+// DOMContentLoaded
+// ----------------------
 document.addEventListener("DOMContentLoaded", () => {
   const userFullNameSpan = document.getElementById("userFullName");
   const backDashboardBtn = document.getElementById("backDashboardBtn");
 
   onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
+    if (!user) return window.location.href = "login.html";
 
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
@@ -45,140 +81,61 @@ document.addEventListener("DOMContentLoaded", () => {
       const taskId = card.dataset.taskId;
       const reward = Number(card.dataset.reward);
 
-      // If task already completed
+      // Already completed tasks
       if (userData.completedTasks?.[taskId]) {
         completeBtn.textContent = "Completed ✅";
         completeBtn.disabled = true;
         card.classList.add("task-completed");
       }
 
-      // ---------- Video Task ----------
+      // ---------------- Video Task ----------------
       if (card.classList.contains("video-task")) {
         const watchBtn = card.querySelector(".watch-btn");
         const videoLink = card.dataset.videoLink;
-
         let videoWatched = false;
 
         watchBtn.addEventListener("click", () => {
           window.open(videoLink, "_blank");
           videoWatched = true;
-
-          // Enable completeBtn after 1 min
-          setTimeout(() => {
-            if (!userData.completedTasks?.[taskId]) completeBtn.disabled = false;
-          }, 60000);
+          activateCompleteBtn(completeBtn, userData, userRef, taskId, reward, 60); // 1 min
         });
 
-        completeBtn.addEventListener("click", async () => {
+        completeBtn.addEventListener("click", () => {
           if (!videoWatched) return alert("Please watch the video first!");
-          try {
-            completeBtn.disabled = true;
-            await updateDoc(userRef, {
-              balance: increment(reward),
-              [`completedTasks.${taskId}`]: true
-            });
-            completeBtn.textContent = "Completed ✅";
-            card.classList.add("task-completed");
-          } catch (err) {
-            console.error("Error completing task:", err);
-            completeBtn.disabled = false;
-            completeBtn.textContent = "Mark as Complete";
-            alert("Failed to complete task. Try again.");
-          }
+          handleCompleteClick(completeBtn, userRef, taskId, reward, card);
         });
       }
 
-      // ---------- Social Task ----------
+      // ---------------- Social Task ----------------
       if (card.classList.contains("social-task")) {
         const joinBtn = card.querySelector(".join-btn");
         const socialLink = card.dataset.socialLink;
 
         joinBtn.addEventListener("click", () => {
           window.open(socialLink, "_blank");
-          // Activate completeBtn after 10s countdown
-          let countdown = 10;
-          completeBtn.disabled = true;
-          completeBtn.textContent = `Checking... ${countdown}s`;
-
-          const timer = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-              completeBtn.textContent = `Checking... ${countdown}s`;
-            } else {
-              clearInterval(timer);
-              if (!userData.completedTasks?.[taskId]) completeBtn.disabled = false;
-              completeBtn.textContent = "Mark as Complete";
-            }
-          }, 1000);
+          activateCompleteBtn(completeBtn, userData, userRef, taskId, reward, 10); // 10 sec
         });
 
-        completeBtn.addEventListener("click", async () => {
-          try {
-            completeBtn.disabled = true;
-            await updateDoc(userRef, {
-              balance: increment(reward),
-              [`completedTasks.${taskId}`]: true
-            });
-            completeBtn.textContent = "Completed ✅";
-            card.classList.add("task-completed");
-          } catch (err) {
-            console.error("Error completing task:", err);
-            completeBtn.disabled = false;
-            completeBtn.textContent = "Mark as Complete";
-            alert("Failed to complete task. Try again.");
-          }
-        });
+        completeBtn.addEventListener("click", () => handleCompleteClick(completeBtn, userRef, taskId, reward, card));
       }
 
-      // ---------- Other Task ----------
+      // ---------------- Other Task ----------------
       if (card.classList.contains("other-task")) {
         const startBtn = card.querySelector(".start-btn");
         const taskLink = card.dataset.taskLink;
 
         startBtn.addEventListener("click", () => {
           window.open(taskLink, "_blank");
-
-          // Enable completeBtn after 30s countdown
-          let countdown = 30;
-          completeBtn.disabled = true;
-          completeBtn.textContent = `Checking... ${countdown}s`;
-
-          const timer = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-              completeBtn.textContent = `Checking... ${countdown}s`;
-            } else {
-              clearInterval(timer);
-              if (!userData.completedTasks?.[taskId]) completeBtn.disabled = false;
-              completeBtn.textContent = "Mark as Complete";
-            }
-          }, 1000);
+          activateCompleteBtn(completeBtn, userData, userRef, taskId, reward, 30); // 30 sec
         });
 
-        completeBtn.addEventListener("click", async () => {
-          try {
-            completeBtn.disabled = true;
-            await updateDoc(userRef, {
-              balance: increment(reward),
-              [`completedTasks.${taskId}`]: true
-            });
-            completeBtn.textContent = "Completed ✅";
-            card.classList.add("task-completed");
-          } catch (err) {
-            console.error("Error completing task:", err);
-            completeBtn.disabled = false;
-            completeBtn.textContent = "Mark as Complete";
-            alert("Failed to complete task. Try again.");
-          }
-        });
+        completeBtn.addEventListener("click", () => handleCompleteClick(completeBtn, userRef, taskId, reward, card));
       }
     });
   });
 
-  // Back to Dashboard button
+  // Back button
   if (backDashboardBtn) {
-    backDashboardBtn.addEventListener("click", () => {
-      window.location.href = "dashboard.html";
-    });
+    backDashboardBtn.addEventListener("click", () => window.location.href = "dashboard.html");
   }
 });
