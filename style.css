@@ -165,3 +165,23 @@ form input {
     grid-template-columns: 1fr;
   }
 }
+
+/* Refer Section */
+.refer-section input#referLink {
+  width: 100%;
+  padding: 8px 12px;
+  margin: 8px 0;
+  border-radius: 5px;
+  border: 1px solid #00ff9c;
+  background-color: #0f0f0f;
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+}
+
+.refer-section .refer-instructions {
+  font-size: 0.9rem;
+  color: #ccc;
+  margin-top: 10px;
+}
+
