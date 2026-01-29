@@ -58,22 +58,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Display fullName if available, else fallback to email
-      if (userData && userData.fullName) {
-        userFullNameSpan.textContent = userData.fullName;
-      } else {
-        userFullNameSpan.textContent = user.email;
-      }
+// Display fullName
+if (userData && userData.fullName) {
+    userFullNameSpan.textContent = userData.fullName;
+} else {
+    userFullNameSpan.textContent = user.email;
+}
+
+// ----------------------
+// Account Balance Section
+// ----------------------
+const balanceAmount = document.querySelector(".balance-amount");
+if (balanceAmount) {
+    balanceAmount.textContent = "#"; // placeholder
+}
+
+// ----------------------
+// Refer Section
+// ----------------------
+const referLinkInput = document.getElementById("referLink");
+const referCountSpan = document.getElementById("referCount");
+
+if (referLinkInput) {
+    referLinkInput.value = `https://rhbrands.github.io/Rearnhub/register?ref=${user.uid}`;
+}
+
+if (referCountSpan) {
+    const referralCount = userData && userData.referrals ? userData.referrals.length : 0;
+    referCountSpan.textContent = referralCount;
+}
 
     } catch (error) {
       console.error("Error fetching user data:", error);
       userFullNameSpan.textContent = user.email;
     }
   });
-
-  // Example: Update balance dynamically
-const balanceAmount = document.querySelector(".balance-amount");
-balanceAmount.textContent = "#"; // replace # with real balance from Firebase
 
 
   // Logout button
