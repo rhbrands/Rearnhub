@@ -17,27 +17,46 @@
   </header>
 
   <main class="dashboard-main">
-    <h1>Available Tasks</h1>
-    <p>Complete tasks to earn rewards. Click on a task to start.</p>
+  <h1>Available Tasks</h1>
+  <p>Complete tasks to earn rewards.</p>
 
-    <!-- Tasks container -->
-    <div id="tasksContainer" class="tasks-container">
-      <!-- Example tasks -->
-      <div class="task-card">
-        <h3>Task 1: Watch a Video</h3>
-        <p>Earn 10 points by watching this video.</p>
-        <button class="btn btn-primary">Do Task</button>
-      </div>
+  <!-- Video Tasks -->
+  <section class="tasks-category">
+    <h2>📺 Video Tasks</h2>
 
-      <div class="task-card">
-        <h3>Task 2: Share on Social Media</h3>
-        <p>Earn 20 points by sharing our site link.</p>
-        <button class="btn btn-primary">Do Task</button>
-      </div>
+    <div class="task-card" data-task-id="video1" data-reward="200">
+      <h3>Watch Intro Video</h3>
+      <p>Watch a short video and earn ₦200</p>
+      <button class="btn btn-primary">Do Task</button>
     </div>
+  </section>
 
-    <button id="backDashboardBtn" class="btn btn-outline" style="margin-top: 20px;">Back to Dashboard</button>
-  </main>
+  <!-- Social Tasks -->
+  <section class="tasks-category">
+    <h2>📣 Social Tasks</h2>
+
+    <div class="task-card" data-task-id="social1" data-reward="300">
+      <h3>Share on WhatsApp</h3>
+      <p>Share our link and earn ₦300</p>
+      <button class="btn btn-primary">Do Task</button>
+    </div>
+  </section>
+
+  <!-- Simple Tasks -->
+  <section class="tasks-category">
+    <h2>🧠 Simple Tasks</h2>
+
+    <div class="task-card" data-task-id="simple1" data-reward="100">
+      <h3>Daily Login</h3>
+      <p>Login today and earn ₦100</p>
+      <button class="btn btn-primary">Do Task</button>
+    </div>
+  </section>
+
+  <button id="backDashboardBtn" class="btn btn-outline" style="margin-top: 20px;">
+    Back to Dashboard
+  </button>
+</main>
 
   <script type="module" src="tasks.js"></script>
 </body>
