@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tasks | RearnHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="site-name">RearnHub</div>
+    <div class="user-info">
+      <span id="userFullName"></span>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <h1>Available Tasks</h1>
+    <p>Complete tasks to earn rewards. Click on a task to start.</p>
+
+    <!-- Tasks container -->
+    <div id="tasksContainer" class="tasks-container">
+      <!-- Example tasks -->
+      <div class="task-card">
+        <h3>Task 1: Watch a Video</h3>
+        <p>Earn 10 points by watching this video.</p>
+        <button class="btn btn-primary">Do Task</button>
+      </div>
+
+      <div class="task-card">
+        <h3>Task 2: Share on Social Media</h3>
+        <p>Earn 20 points by sharing our site link.</p>
+        <button class="btn btn-primary">Do Task</button>
+      </div>
+    </div>
+
+    <button id="backDashboardBtn" class="btn btn-outline" style="margin-top: 20px;">Back to Dashboard</button>
+  </main>
+
+  <script type="module" src="tasks.js"></script>
+</body>
+</html>
