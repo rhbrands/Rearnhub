@@ -77,10 +77,20 @@ input {
   align-items: center;
 }
 
+/* Make password input same size as other inputs */
 .password-wrapper input {
   flex: 1;
-  padding-right: 40px; /* space for eye button */
+  padding: 12px;           /* match regular input padding */
+  font-size: 1rem;         /* match regular input font size */
+  border-radius: 5px;      /* match regular input border radius */
+  border: none;
+  width: 100%;             /* full width */
+  background-color: #1a1a1a;
+  color: #fff;
+  box-sizing: border-box;  /* ensures padding is included in width */
+  padding-right: 40px;     /* space for toggle button */
 }
+
 
 .toggle-password {
   position: absolute;
