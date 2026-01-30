@@ -75,30 +75,33 @@ if (togglePasswordBtn && passwordInput) {
 }
 
 // ----------------------
-// Button Loading Helper
-// ----------------------
-function setButtonLoading(button, isLoading) {
-  if (isLoading) {
-    button.disabled = true;
-    button.classList.add("loading");
-    button.innerHTML = `${button.textContent} <span class="spinner"></span>`;
-  } else {
-    button.disabled = false;
-    button.classList.remove("loading");
-    button.innerHTML = button.textContent.replace(/\s*<span class="spinner"><\/span>/, "");
-  }
-}
-
-// ----------------------
-// Form Handler Helper
+// Helper: Attach form with spinner
 // ----------------------
 function attachFormHandler(formId, callback) {
   const form = document.getElementById(formId);
   if (!form) return;
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    callback(form);
+
+    const submitBtn = form.querySelector("button[type='submit']");
+    const originalText = submitBtn.textContent;
+
+    // Add loading state
+    submitBtn.disabled = true;
+    submitBtn.classList.add("loading");
+    submitBtn.innerHTML = `${originalText} <span class="spinner"></span>`;
+
+    try {
+      await callback(form); // run the async callback
+    } finally {
+      // Remove loading state after 1.5s (or when callback finishes)
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("loading");
+        submitBtn.textContent = originalText;
+      }, 1500);
+    }
   });
 }
 
@@ -107,21 +110,18 @@ function attachFormHandler(formId, callback) {
 // ----------------------
 attachFormHandler("registerForm", async (form) => {
   const msg = document.getElementById("register-message");
-  const btn = form.querySelector("button[type='submit']");
-
-  msg.textContent = "";
-  msg.className = "form-message";
-  setButtonLoading(btn, true);
 
   const fullName = form.querySelector("#fullName")?.value.trim();
   const whatsapp = form.querySelector("#whatsapp")?.value.trim();
   const email = form.querySelector("#email").value.trim();
   const password = form.querySelector("#password").value;
 
+  msg.textContent = "";
+  msg.className = "form-message";
+
   if (!fullName || !whatsapp || !email || !password) {
     msg.textContent = "Please fill in all required fields.";
     msg.classList.add("error");
-    setButtonLoading(btn, false);
     return;
   }
 
@@ -156,8 +156,6 @@ attachFormHandler("registerForm", async (form) => {
 
     msg.textContent = message;
     msg.classList.add("error");
-  } finally {
-    setButtonLoading(btn, false);
   }
 });
 
@@ -166,19 +164,16 @@ attachFormHandler("registerForm", async (form) => {
 // ----------------------
 attachFormHandler("loginForm", async (form) => {
   const msg = document.getElementById("login-message");
-  const btn = form.querySelector("button[type='submit']");
-
-  msg.textContent = "";
-  msg.className = "form-message";
-  setButtonLoading(btn, true);
 
   const email = form.querySelector("#email").value.trim();
   const password = form.querySelector("#password").value;
 
+  msg.textContent = "";
+  msg.className = "form-message";
+
   if (!email || !password) {
     msg.textContent = "Please enter both email and password.";
     msg.classList.add("error");
-    setButtonLoading(btn, false);
     return;
   }
 
@@ -195,7 +190,5 @@ attachFormHandler("loginForm", async (form) => {
   } catch (error) {
     msg.textContent = "Incorrect email or password";
     msg.classList.add("error");
-  } finally {
-    setButtonLoading(btn, false);
   }
 });
