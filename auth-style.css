@@ -67,7 +67,7 @@ input {
   border: none;
   font-size: 1rem;
   width: 100%;
-  background-color: #1a1a1a; /* matches previous input style */
+  background-color: #1a1a1a;
   color: #fff;
   box-sizing: border-box;
   height: 48px;
@@ -90,7 +90,7 @@ input {
   color: #fff;
   box-sizing: border-box;
   padding-right: 40px;     /* space for toggle button */
-  height: 48px;            /* force same height as other inputs */
+  height: 48px;            /* same height as other inputs */
 }
 
 /* Eye toggle button */
@@ -129,6 +129,9 @@ input {
   text-align: center;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-flex;          /* for spinner alignment */
+  align-items: center;           /* vertically center text + spinner */
+  justify-content: center;
 }
 
 .page-index .btn:hover,
@@ -242,15 +245,15 @@ input {
    Spinner animation for buttons
    ========================= */
 .spinner {
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top: 3px solid #00ff9c;
-  border-radius: 50%;
+  display: inline-block;
   width: 18px;
   height: 18px;
-  animation: spin 1s linear infinite;
-  display: inline-block;
-  vertical-align: middle;
   margin-left: 8px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #00ff9c;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  vertical-align: middle;
 }
 
 @keyframes spin {
@@ -260,6 +263,7 @@ input {
 
 /* Disable button visually while loading */
 .btn.loading {
-  opacity: 0.7;
+  opacity: 0.8;
   cursor: not-allowed;
+  pointer-events: none;
 }
