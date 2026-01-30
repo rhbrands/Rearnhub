@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         userFullNameSpan.textContent = userData.fullName || user.email;
 
         // Update balance dynamically
-        balanceAmount.textContent = `#${userData.balance || 0}`;
+        balanceAmount.textContent = `$${userData.balance || 0}`;
 
         // Update referral link
         if (referLinkInput) {
