@@ -186,3 +186,38 @@ input {
 .page-content p a:hover {
   text-decoration: underline;
 }
+
+/* =========================
+   Form feedback messages
+   ========================= */
+
+.form-message {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* Error message */
+.form-message.error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+/* Success message */
+.form-message.success {
+  color: #00ff9c;
+  background: rgba(0, 255, 156, 0.12);
+  border: 1px solid rgba(0, 255, 156, 0.4);
+}
+
+/* Info / loading message (optional) */
+.form-message.info {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
