@@ -11,29 +11,135 @@
   <meta name="keywords" content="earn online, microtasks, rewards, RearnHub">
   <meta name="author" content="RearnHub">
 
-  <!-- New scoped CSS for index/login/register pages -->
+  <!-- Scoped CSS for auth pages -->
   <link rel="stylesheet" href="auth-style.css">
+
+  <style>
+    /* =====================
+       INDEX PAGE PREMIUM STYLE
+       ===================== */
+    .page-index header h1 {
+      font-size: 3rem;
+      line-height: 1.2;
+    }
+
+    .page-index header p {
+      font-size: 1.4rem;
+      margin-bottom: 40px;
+      color: #ffffff;
+    }
+
+    .page-index .cta-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 60px;
+    }
+
+    .page-index .cta-buttons .btn {
+      width: 100%;
+      padding: 16px 0;
+      font-size: 1.2rem;
+      border-radius: 8px;
+    }
+
+    .how-it-works {
+      max-width: 700px;
+      width: 90%;
+      text-align: left;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .how-it-works h2 {
+      color: #00ff9c;
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
+
+    .step {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-left: 4px solid #00ff9c;
+      border-radius: 6px;
+    }
+
+    .step h3 {
+      margin-bottom: 8px;
+      font-size: 1.3rem;
+      color: #ffffff;
+    }
+
+    .step p {
+      font-size: 1rem;
+      color: #cccccc;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+      .page-index header h1 {
+        font-size: 2.2rem;
+      }
+      .page-index header p {
+        font-size: 1.1rem;
+      }
+      .how-it-works h2 {
+        font-size: 1.6rem;
+      }
+      .step h3 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
 </head>
+
 <body class="page-index">
 
-  <header>
-    <h1>RearnHub</h1>
-    <p>Complete simple tasks. Earn real rewards.</p>
-  </header>
+  <!-- CENTERED PAGE WRAPPER -->
+  <div class="page-content">
 
-  <main class="page-content">
-    <div class="cta-buttons">
-      <a href="register.html" class="btn">Register</a>
-      <a href="login.html" class="btn btn-outline">Login</a>
-    </div>
-  </main>
+    <header>
+      <h1>Get paid for testing apps, games & surveys</h1>
+      <p>Earn up to $10 per offer</p>
+    </header>
 
-  <footer>
-    <p>© 2026 RearnHub. All rights reserved.</p>
-  </footer>
-  
-  <script src="script.js"></script>
-  <script type="module" src="script.js"></script>
+    <main>
+      <!-- CTA buttons -->
+      <div class="cta-buttons">
+        <a href="register.html" class="btn">Sign Up</a>
+        <a href="login.html" class="btn btn-outline">Login</a>
+      </div>
+
+      <!-- How it works section -->
+      <section class="how-it-works">
+        <h2>Want to earn free cash within minutes? Here’s how</h2>
+
+        <div class="step">
+          <h3>1. Choose a Task</h3>
+          <p>Take your pick from the tasks on the Task page. We list the best offers from companies who want to promote their community.</p>
+        </div>
+
+        <div class="step">
+          <h3>2. Complete the Task</h3>
+          <p>Most tasks are very simple and take around 1 minute to complete.</p>
+        </div>
+
+        <div class="step">
+          <h3>3. Get Paid</h3>
+          <p>For each task you complete, you'll be rewarded with the corresponding task amount. Cash out and get your hands on your free cash!</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>© 2026 RearnHub. All rights reserved.</p>
+    </footer>
+
+  </div>
 
 </body>
 </html>
