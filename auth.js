@@ -27,7 +27,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ----------------------
-// Password Strength Hint
+// Password Strength Hint (Register only)
 // ----------------------
 const passwordInput = document.getElementById("password");
 const passwordHint = document.getElementById("password-hint");
@@ -35,32 +35,24 @@ const passwordHint = document.getElementById("password-hint");
 if (passwordInput && passwordHint) {
   passwordInput.addEventListener("input", () => {
     const val = passwordInput.value;
-
     let strength = 0;
 
     if (val.length >= 6) strength++;
     if (/[A-Z]/.test(val)) strength++;
     if (/[0-9]/.test(val)) strength++;
-    if (/[\W_]/.test(val)) strength++; // special characters
+    if (/[\W_]/.test(val)) strength++;
 
     let message = "";
-    let color = "#ef4444"; // red by default
+    let color = "#ef4444";
 
-    switch (strength) {
-      case 0:
-      case 1:
-        message = "Weak password";
-        color = "#ef4444"; // red
-        break;
-      case 2:
-      case 3:
-        message = "Medium strength";
-        color = "#facc15"; // yellow
-        break;
-      case 4:
-        message = "Strong password";
-        color = "#22c55e"; // green
-        break;
+    if (strength <= 1) {
+      message = "Weak password";
+    } else if (strength <= 3) {
+      message = "Medium strength";
+      color = "#facc15";
+    } else {
+      message = "Strong password";
+      color = "#22c55e";
     }
 
     passwordHint.textContent = message;
@@ -69,16 +61,15 @@ if (passwordInput && passwordHint) {
 }
 
 // ----------------------
-// Show/Hide Password Toggle
+// Show / Hide Password Toggle (Login + Register)
 // ----------------------
-const togglePasswordBtn = document.getElementById("toggle-password");
-const passwordInput = document.getElementById("password");
+const toggleBtn = document.getElementById("toggle-password");
 
-if (togglePasswordBtn && passwordInput) {
-  togglePasswordBtn.addEventListener("click", () => {
-    const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-    passwordInput.setAttribute("type", type);
-    togglePasswordBtn.textContent = type === "password" ? "👁️" : "🙈";
+if (toggleBtn && passwordInput) {
+  toggleBtn.addEventListener("click", () => {
+    const isHidden = passwordInput.type === "password";
+    passwordInput.type = isHidden ? "text" : "password";
+    toggleBtn.textContent = isHidden ? "🙈" : "👁️";
   });
 }
 
@@ -123,7 +114,7 @@ attachFormHandler("registerForm", async (form) => {
       fullName,
       whatsapp,
       email,
-      balance: 5000, // registration bonus
+      balance: 5000,
       createdAt: new Date()
     });
 
@@ -135,20 +126,19 @@ attachFormHandler("registerForm", async (form) => {
     }, 1500);
 
   } catch (error) {
-  let friendlyMessage = "Registration failed. Please try again.";
+    let friendlyMessage = "Registration failed.";
 
-  if (error.code === "auth/email-already-in-use") {
-    friendlyMessage = "Email already in use, try logging in";
-  } else if (error.code === "auth/invalid-email") {
-    friendlyMessage = "Invalid email address";
-  } else if (error.code === "auth/weak-password") {
-    friendlyMessage = "Password should be at least 6 characters";
+    if (error.code === "auth/email-already-in-use") {
+      friendlyMessage = "Email already in use, try logging in";
+    } else if (error.code === "auth/invalid-email") {
+      friendlyMessage = "Invalid email address";
+    } else if (error.code === "auth/weak-password") {
+      friendlyMessage = "Password should be at least 6 characters";
+    }
+
+    messageBox.textContent = friendlyMessage;
+    messageBox.classList.add("error");
   }
-
-  messageBox.textContent = friendlyMessage;
-  messageBox.classList.add("error");
-}
-
 });
 
 // ----------------------
@@ -179,21 +169,18 @@ attachFormHandler("loginForm", async (form) => {
       window.location.href = "dashboard.html";
     }, 1500);
 
- } catch (error) {
-  const messageBox = document.getElementById("login-message");
+  } catch (error) {
+    let friendlyMessage = "Login failed.";
 
-  let friendlyMessage = "Login failed. Please try again.";
+    if (
+      error.code === "auth/invalid-credential" ||
+      error.code === "auth/wrong-password" ||
+      error.code === "auth/user-not-found"
+    ) {
+      friendlyMessage = "Incorrect email or password";
+    }
 
-  if (
-    error.code === "auth/invalid-credential" ||
-    error.code === "auth/wrong-password" ||
-    error.code === "auth/user-not-found"
-  ) {
-    friendlyMessage = "Incorrect email or password";
+    messageBox.textContent = friendlyMessage;
+    messageBox.classList.add("error");
   }
-
-  messageBox.textContent = friendlyMessage;
-  messageBox.className = "form-message error";
-}
-
 });
