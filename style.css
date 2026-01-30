@@ -99,7 +99,6 @@ form input {
 /* Dashboard Header */
 .dashboard-header {
   width: 100%;
-  height: 72px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -107,7 +106,7 @@ form input {
   background: linear-gradient(135deg, #00ff9c, #00e68a);
   color: #000000;
 
-  padding: 0 24px;
+  padding: 16px 24px; /* same feel as mobile */
   font-weight: 700;
   font-size: 1.2rem;
 
@@ -134,9 +133,9 @@ form input {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .dashboard-header {
-    height: auto;
     padding: 16px;
   }
+}
 
   .dashboard-header .site-name {
     font-size: 1.2rem;
@@ -425,3 +424,74 @@ form input {
   cursor: pointer;
   font-size: 1.1rem;
 }
+
+/* =========================
+   DASHBOARD LAYOUT FIX
+   ========================= */
+
+/* Center the whole dashboard on desktop */
+.dashboard-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Make sections behave like cards in a grid */
+@media (min-width: 900px) {
+  .dashboard-main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  /* Welcome text spans full width */
+  .dashboard-main > p {
+    grid-column: 1 / -1;
+  }
+
+  /* Tasks & Logout centered */
+  .tasks-section {
+    grid-column: 1 / 2;
+  }
+
+  #logoutBtn {
+    grid-column: 2 / 3;
+    align-self: center;
+    justify-self: center;
+  }
+}
+
+/* Card consistency */
+.dashboard-section {
+  background: #151515;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(0, 255, 170, 0.08);
+}
+
+/* Balance emphasis */
+.balance-section {
+  text-align: center;
+}
+
+.balance-amount {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #00ff9d;
+}
+
+/* Refer input clean */
+#referLink {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background: #000;
+  color: #00ff9d;
+  border: 1px solid #00ff9d;
+}
+
+/* Buttons alignment fix */
+.btn {
+  margin-top: 1rem;
+}
+
