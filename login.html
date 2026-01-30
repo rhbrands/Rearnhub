@@ -1,44 +1,47 @@
+here is my login html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>RearnHub | Earn Rewards by Completing Simple Tasks</title>
-
-  <!-- SEO -->
-  <meta name="description" content="RearnHub lets you earn rewards by completing simple online tasks. Register and start earning today.">
-  <meta name="keywords" content="earn online, microtasks, rewards, RearnHub">
-  <meta name="author" content="RearnHub">
+  <title>Login | RearnHub</title>
 
   <!-- Scoped CSS for auth pages -->
   <link rel="stylesheet" href="auth-style.css">
 </head>
-<body class="page-index">
+
+<body class="page-login">
 
   <!-- CENTERED PAGE WRAPPER -->
   <div class="page-content">
 
     <header>
-      <h1>RearnHub</h1>
-      <p>Complete simple tasks. Earn real rewards.</p>
+      <h1>Welcome Back</h1>
+      <p>Login to continue earning rewards</p>
     </header>
 
     <main>
-      <div class="cta-buttons">
-        <a href="register.html" class="btn">Register</a>
-        <a href="login.html" class="btn btn-outline">Login</a>
-      </div>
-    </main>
+      <div id="login-message" class="form-message"></div>
 
-    <footer>
-      <p>© 2026 RearnHub. All rights reserved.</p>
-    </footer>
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="Email address" required />
+
+        <div class="password-wrapper">
+          <input type="password" id="password" placeholder="Password" required />
+          <button type="button" id="toggle-password" class="toggle-password">👁️</button>
+        </div>
+
+        <button type="submit" class="btn">Login</button>
+      </form>
+
+      <p class="helper-text">
+        Don't have an account?
+        <a href="register.html">Register</a>
+      </p>
+    </main>
 
   </div>
 
-  <script src="script.js"></script>
-  <script type="module" src="script.js"></script>
-
+  <script type="module" src="auth.js"></script>
 </body>
 </html>
