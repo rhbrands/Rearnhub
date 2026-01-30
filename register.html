@@ -4,37 +4,77 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register | RearnHub</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Scoped CSS for auth pages -->
+  <link rel="stylesheet" href="auth-style.css">
 </head>
-<body>
 
-  <header>
-    <h1>Create an Account</h1>
-    <p>Start earning by completing simple tasks</p>
-  </header>
+<body class="page-register">
 
-  <main>
-    <!-- Message container -->
-<div id="register-message" class="form-message"></div>
-    <form id="registerForm">
-      <input type="text" id="fullName" placeholder="Full Name (as on ID card)" required />
-      <input type="tel" id="whatsapp" placeholder="WhatsApp Number" required />
-      <input type="email" id="email" placeholder="Email address" required />
-     <!-- Registration password input -->
-<div class="password-wrapper">
-  <input type="password" id="password" placeholder="Password" required />
-  <button type="button" id="toggle-password" class="toggle-password">👁️</button>
-</div>
-<div id="password-hint" class="form-message"></div>
+  <!-- CENTERED PAGE WRAPPER -->
+  <div class="page-content">
 
-      <button type="submit" class="btn">Register</button>
-    </form>
+    <header>
+      <h1>Create an Account</h1>
+      <p>Start earning by completing simple tasks</p>
+    </header>
 
-    <p style="margin-top:15px;">
-      Already have an account?
-      <a href="login.html">Login</a>
-    </p>
-  </main>
+    <main>
+      <!-- Message container -->
+      <div id="register-message" class="form-message"></div>
+
+      <form id="registerForm">
+        <input
+          type="text"
+          id="fullName"
+          placeholder="Full Name (as on ID card)"
+          required
+        />
+
+        <input
+          type="tel"
+          id="whatsapp"
+          placeholder="WhatsApp Number"
+          required
+        />
+
+        <input
+          type="email"
+          id="email"
+          placeholder="Email address"
+          required
+        />
+
+        <!-- Password input -->
+        <div class="password-wrapper">
+          <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            required
+          />
+          <button
+            type="button"
+            id="toggle-password"
+            class="toggle-password"
+          >
+            👁️
+          </button>
+        </div>
+
+        <!-- Password hint / validation message -->
+        <div id="password-hint" class="form-message"></div>
+
+        <button type="submit" class="btn">Register</button>
+      </form>
+
+      <p style="margin-top:15px;">
+        Already have an account?
+        <a href="login.html">Login</a>
+      </p>
+    </main>
+
+  </div>
 
   <script type="module" src="auth.js"></script>
 </body>
