@@ -495,3 +495,49 @@ form input {
   margin-top: 1rem;
 }
 
+/* ============================
+   HARD DESKTOP LAYOUT OVERRIDE
+   ============================ */
+
+/* Desktop: stop auto-fit chaos */
+@media (min-width: 900px) {
+  .dashboard-main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+
+    /* 🔥 OVERRIDE the earlier grid */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  /* Welcome text full width */
+  .dashboard-main > p {
+    grid-column: 1 / -1;
+  }
+
+  /* Balance + Refer */
+  .balance-section,
+  .refer-section {
+    grid-column: span 1;
+  }
+
+  /* Tasks left, Logout right */
+  .tasks-section {
+    grid-column: 1 / 2;
+  }
+
+  #logoutBtn {
+    grid-column: 2 / 3;
+    align-self: center;
+    justify-self: center;
+  }
+}
+
+/* Mobile keeps original stacking */
+@media (max-width: 899px) {
+  .dashboard-main {
+    grid-template-columns: 1fr;
+  }
+}
