@@ -170,10 +170,11 @@ input {
   }
 }
 
-/* Auth page helper text */
-.page-content p {
+/* Helper text below forms */
+.page-content main > p {
   color: #ffffff;
 }
+
 
 /* Links inside auth helper text */
 .page-content p a {
