@@ -104,8 +104,8 @@ form input {
   justify-content: space-between;
   align-items: center;
 
-  background: linear-gradient(135deg, #0d5bd9, #0a4ab3);
-  color: #ffffff;
+  background: linear-gradient(135deg, #00ff9c, #00e68a);
+  color: #000000;
 
   padding: 0 24px;
   font-weight: 700;
@@ -115,19 +115,21 @@ form input {
   top: 0;
   z-index: 1000;
 
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 6px 20px rgba(0, 255, 156, 0.35);
 }
 
 .dashboard-header .site-name {
   font-size: 1.4rem;
   font-weight: 700;
+  color: #000;
 }
 
 .dashboard-header .user-info {
   font-size: 0.9rem;
-  font-weight: 500;
-  opacity: 0.9;
+  font-weight: 600;
+  color: #003322;
 }
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
