@@ -18,9 +18,38 @@
     /* =====================
        INDEX PAGE PREMIUM STYLE
        ===================== */
+    body.page-index {
+      position: relative;
+    }
+
+    /* Top-right site name */
+    .site-header {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #00ff9c;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Centered main content */
+    .page-index .page-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 40px;
+      padding: 20px;
+      text-align: center;
+    }
+
     .page-index header h1 {
       font-size: 3rem;
       line-height: 1.2;
+      color: #00ff9c;
     }
 
     .page-index header p {
@@ -45,6 +74,7 @@
       border-radius: 8px;
     }
 
+    /* How it works section */
     .how-it-works {
       max-width: 700px;
       width: 90%;
@@ -81,6 +111,11 @@
     }
 
     @media (max-width: 600px) {
+      .site-header {
+        top: 15px;
+        right: 20px;
+        font-size: 1rem;
+      }
       .page-index header h1 {
         font-size: 2.2rem;
       }
@@ -98,6 +133,9 @@
 </head>
 
 <body class="page-index">
+
+  <!-- SITE NAME TOP RIGHT -->
+  <div class="site-header">RearnHub</div>
 
   <!-- CENTERED PAGE WRAPPER -->
   <div class="page-content">
