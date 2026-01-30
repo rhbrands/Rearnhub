@@ -90,20 +90,19 @@ function attachFormHandler(formId, callback) {
     // Add loading state
     submitBtn.disabled = true;
     submitBtn.classList.add("loading");
-    submitBtn.innerHTML = `${originalText} <span class="spinner"></span>`;
+    submitBtn.innerHTML = `<span>${originalText}</span><span class="spinner"></span>`;
 
     try {
-      await callback(form); // run the async callback
+      await callback(form); // wait for async callback (login or register)
     } finally {
-      // Remove loading state after 1.5s (or when callback finishes)
-      setTimeout(() => {
-        submitBtn.disabled = false;
-        submitBtn.classList.remove("loading");
-        submitBtn.textContent = originalText;
-      }, 1500);
+      // Restore button after callback finishes
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("loading");
+      submitBtn.textContent = originalText;
     }
   });
 }
+
 
 // ----------------------
 // Registration
