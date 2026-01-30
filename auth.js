@@ -27,11 +27,15 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ----------------------
-// Password Strength Hint (Register only)
+// DOM ELEMENTS (ONE PLACE ONLY)
 // ----------------------
 const passwordInput = document.getElementById("password");
 const passwordHint = document.getElementById("password-hint");
+const togglePasswordBtn = document.getElementById("toggle-password");
 
+// ----------------------
+// Password Strength Hint
+// ----------------------
 if (passwordInput && passwordHint) {
   passwordInput.addEventListener("input", () => {
     const val = passwordInput.value;
@@ -42,15 +46,14 @@ if (passwordInput && passwordHint) {
     if (/[0-9]/.test(val)) strength++;
     if (/[\W_]/.test(val)) strength++;
 
-    let message = "";
+    let message = "Weak password";
     let color = "#ef4444";
 
-    if (strength <= 1) {
-      message = "Weak password";
-    } else if (strength <= 3) {
+    if (strength >= 2) {
       message = "Medium strength";
       color = "#facc15";
-    } else {
+    }
+    if (strength === 4) {
       message = "Strong password";
       color = "#22c55e";
     }
@@ -61,28 +64,26 @@ if (passwordInput && passwordHint) {
 }
 
 // ----------------------
-// Show / Hide Password Toggle (Login + Register)
+// Show / Hide Password
 // ----------------------
-const toggleBtn = document.getElementById("toggle-password");
-
-if (toggleBtn && passwordInput) {
-  toggleBtn.addEventListener("click", () => {
+if (togglePasswordBtn && passwordInput) {
+  togglePasswordBtn.addEventListener("click", () => {
     const isHidden = passwordInput.type === "password";
     passwordInput.type = isHidden ? "text" : "password";
-    toggleBtn.textContent = isHidden ? "🙈" : "👁️";
+    togglePasswordBtn.textContent = isHidden ? "🙈" : "👁️";
   });
 }
 
 // ----------------------
-// Helper function
+// Helper
 // ----------------------
 function attachFormHandler(formId, callback) {
   const form = document.getElementById(formId);
   if (!form) return;
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
-    await callback(form);
+    callback(form);
   });
 }
 
@@ -90,27 +91,26 @@ function attachFormHandler(formId, callback) {
 // Registration
 // ----------------------
 attachFormHandler("registerForm", async (form) => {
-  const messageBox = document.getElementById("register-message");
+  const msg = document.getElementById("register-message");
 
-  const fullName = form.querySelector("#fullName").value.trim();
-  const whatsapp = form.querySelector("#whatsapp").value.trim();
+  const fullName = form.querySelector("#fullName")?.value.trim();
+  const whatsapp = form.querySelector("#whatsapp")?.value.trim();
   const email = form.querySelector("#email").value.trim();
   const password = form.querySelector("#password").value;
 
-  messageBox.textContent = "";
-  messageBox.className = "form-message";
+  msg.textContent = "";
+  msg.className = "form-message";
 
   if (!fullName || !whatsapp || !email || !password) {
-    messageBox.textContent = "Please fill in all required fields.";
-    messageBox.classList.add("error");
+    msg.textContent = "Please fill in all required fields.";
+    msg.classList.add("error");
     return;
   }
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-    await setDoc(doc(db, "users", user.uid), {
+    await setDoc(doc(db, "users", cred.user.uid), {
       fullName,
       whatsapp,
       email,
@@ -118,26 +118,26 @@ attachFormHandler("registerForm", async (form) => {
       createdAt: new Date()
     });
 
-    messageBox.textContent = "Account created successfully! Redirecting...";
-    messageBox.classList.add("success");
+    msg.textContent = "Account created successfully! Redirecting...";
+    msg.classList.add("success");
 
     setTimeout(() => {
       window.location.href = "dashboard.html";
     }, 1500);
 
   } catch (error) {
-    let friendlyMessage = "Registration failed.";
+    let message = "Registration failed.";
 
     if (error.code === "auth/email-already-in-use") {
-      friendlyMessage = "Email already in use, try logging in";
+      message = "Email already in use, try logging in";
     } else if (error.code === "auth/invalid-email") {
-      friendlyMessage = "Invalid email address";
+      message = "Invalid email address";
     } else if (error.code === "auth/weak-password") {
-      friendlyMessage = "Password should be at least 6 characters";
+      message = "Password should be at least 6 characters";
     }
 
-    messageBox.textContent = friendlyMessage;
-    messageBox.classList.add("error");
+    msg.textContent = message;
+    msg.classList.add("error");
   }
 });
 
@@ -145,42 +145,32 @@ attachFormHandler("registerForm", async (form) => {
 // Login
 // ----------------------
 attachFormHandler("loginForm", async (form) => {
-  const messageBox = document.getElementById("login-message");
+  const msg = document.getElementById("login-message");
 
   const email = form.querySelector("#email").value.trim();
   const password = form.querySelector("#password").value;
 
-  messageBox.textContent = "";
-  messageBox.className = "form-message";
+  msg.textContent = "";
+  msg.className = "form-message";
 
   if (!email || !password) {
-    messageBox.textContent = "Please enter both email and password.";
-    messageBox.classList.add("error");
+    msg.textContent = "Please enter both email and password.";
+    msg.classList.add("error");
     return;
   }
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
 
-    messageBox.textContent = "Login successful! Redirecting...";
-    messageBox.classList.add("success");
+    msg.textContent = "Login successful! Redirecting...";
+    msg.classList.add("success");
 
     setTimeout(() => {
       window.location.href = "dashboard.html";
     }, 1500);
 
   } catch (error) {
-    let friendlyMessage = "Login failed.";
-
-    if (
-      error.code === "auth/invalid-credential" ||
-      error.code === "auth/wrong-password" ||
-      error.code === "auth/user-not-found"
-    ) {
-      friendlyMessage = "Incorrect email or password";
-    }
-
-    messageBox.textContent = friendlyMessage;
-    messageBox.classList.add("error");
+    msg.textContent = "Incorrect email or password";
+    msg.classList.add("error");
   }
 });
