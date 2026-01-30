@@ -4,24 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login | RearnHub</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- New scoped CSS for index/login/register pages -->
+  <link rel="stylesheet" href="auth-style.css">
 </head>
-<body>
+<body class="page-login">
 
   <header>
     <h1>Welcome Back</h1>
     <p>Login to continue earning rewards</p>
   </header>
 
-  <main>
+  <main class="page-content">
     <div id="login-message" class="form-message"></div>
-    
+
     <form id="loginForm">
       <input type="email" id="email" placeholder="Email address" required />
+      
       <div class="password-wrapper">
-  <input type="password" id="password" placeholder="Password" required />
-  <button type="button" id="toggle-password" class="toggle-password">👁️</button>
-</div>
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="button" id="toggle-password" class="toggle-password">👁️</button>
+      </div>
+
       <button type="submit" class="btn">Login</button>
     </form>
 
